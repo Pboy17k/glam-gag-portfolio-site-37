@@ -2,6 +2,7 @@
 import { ReactNode } from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import ScrollReveal from './ScrollReveal';
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
+      <ScrollReveal />
     </div>
   );
 };

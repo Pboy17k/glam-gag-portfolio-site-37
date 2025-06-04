@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Star, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, ArrowRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -21,17 +21,17 @@ const Home = () => {
   const testimonials = [
     {
       name: "Amina Hassan",
-      text: "Absolutely stunning work! GAG made me feel like a queen on my wedding day. The attention to detail was incredible.",
+      text: "Absolutely stunning work! GAG made me feel like a queen on my wedding day. The attention to detail was incredible. ✨",
       rating: 5
     },
     {
-      name: "Fatima Ibrahim",
-      text: "Professional, clean, and so talented. My makeup lasted all day and looked flawless in every photo.",
+      name: "Fatima Ibrahim", 
+      text: "Professional, clean, and so talented. My makeup lasted all day and looked flawless in every photo. 💖",
       rating: 5
     },
     {
       name: "Khadijah Musa",
-      text: "The best makeup artist in Kaduna! She understood my vision perfectly and delivered beyond expectations.",
+      text: "The best makeup artist in Kaduna! She understood my vision perfectly and delivered beyond expectations. 💅",
       rating: 5
     }
   ];
@@ -59,7 +59,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-hidden">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
@@ -70,19 +70,40 @@ const Home = () => {
           />
           <div className="absolute inset-0 hero-gradient"></div>
         </div>
+
+        {/* Animated sparkles */}
+        <div className="absolute inset-0">
+          <div className="sparkle"></div>
+          <div className="sparkle"></div>
+          <div className="sparkle"></div>
+          <div className="sparkle"></div>
+          <div className="sparkle"></div>
+        </div>
+
+        {/* Floating hearts */}
+        <div className="floating-hearts">
+          <div className="floating-heart">💖</div>
+          <div className="floating-heart">✨</div>
+          <div className="floating-heart">💅</div>
+          <div className="floating-heart">🌸</div>
+          <div className="floating-heart">💎</div>
+        </div>
         
         <div className="relative z-10 text-center max-w-4xl px-4">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            <span className="gradient-text">Glam by GAG</span>
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 animate-fade-in text-shadow-soft">
+            <span className="gradient-text font-playfair">Glam by GAG</span>
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-muted-foreground animate-slide-up">
-            Professional Makeup Artistry for Your Special Moments
+          <p className="text-xl md:text-3xl mb-4 text-foreground/90 animate-slide-up font-light tracking-wide">
+            Where your beauty meets elegance
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-zoom-in">
-            <Button asChild size="lg" className="text-lg px-8 py-3">
-              <Link to="/booking">Book Your Session</Link>
+          <p className="text-lg md:text-xl mb-8 text-muted-foreground animate-slide-up">
+            Professional Makeup Artistry for Your Special Moments ✨
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-zoom-in">
+            <Button asChild size="lg" className="luxury-button text-xl px-12 py-4 rounded-full font-medium">
+              <Link to="/booking">✨ Book Your Glam ✨</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-3">
+            <Button asChild variant="outline" size="lg" className="text-xl px-12 py-4 rounded-full border-2 border-primary/30 hover:border-primary bg-white/20 backdrop-blur-sm">
               <Link to="/gallery">View Portfolio</Link>
             </Button>
           </div>
@@ -90,43 +111,45 @@ const Home = () => {
       </section>
 
       {/* Gallery Showcase */}
-      <section className="py-20 bg-card">
+      <section className="py-24 powder-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Recent Work</h2>
-            <p className="text-xl text-muted-foreground">Showcasing our latest transformations</p>
+          <div className="text-center mb-16 reveal-on-scroll">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Recent Transformations</h2>
+            <p className="text-xl text-muted-foreground font-light">Showcasing our latest beauty creations ✨</p>
           </div>
 
-          <div className="relative max-w-4xl mx-auto">
-            <div className="relative h-96 md:h-[500px] rounded-2xl overflow-hidden">
+          <div className="relative max-w-5xl mx-auto reveal-on-scroll">
+            <div className="relative h-96 md:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
               <img
                 src={galleryImages[currentSlide]}
                 alt="Makeup transformation"
-                className="w-full h-full object-cover transition-all duration-500"
+                className="w-full h-full object-cover transition-all duration-700 ease-in-out"
               />
               
               <button
                 onClick={prevSlide}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-md text-primary p-3 rounded-full hover:bg-white/30 transition-all duration-300 hover:scale-110"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
               
               <button
                 onClick={nextSlide}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-md text-primary p-3 rounded-full hover:bg-white/30 transition-all duration-300 hover:scale-110"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
             </div>
 
-            <div className="flex justify-center mt-6 space-x-2">
+            <div className="flex justify-center mt-8 space-x-3">
               {galleryImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentSlide ? 'bg-primary' : 'bg-muted'
+                  className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                    index === currentSlide 
+                      ? 'bg-primary scale-125 shadow-lg' 
+                      : 'bg-primary/30 hover:bg-primary/50'
                   }`}
                 />
               ))}
@@ -136,31 +159,32 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20">
+      <section className="py-24 bg-gradient-to-r from-ivory-50 to-peach-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">About Glam by GAG</h2>
-              <p className="text-lg text-muted-foreground mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="reveal-on-scroll">
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 gradient-text">About Glam by GAG</h2>
+              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
                 Glam by GAG is your go-to bridal and casual glam studio. We specialize in flawless skin finishes, 
-                elegant eye makeup, and defined lips that bring out confidence and radiance in every client.
+                elegant eye makeup, and defined lips that bring out confidence and radiance in every client. ✨
               </p>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                 With years of experience and a passion for beauty, we use only high-end products and maintain 
-                the highest standards of hygiene to ensure every client feels pampered and beautiful.
+                the highest standards of hygiene to ensure every client feels pampered and beautiful. 💖
               </p>
-              <Button asChild>
+              <Button asChild className="luxury-button rounded-full px-8 py-3">
                 <Link to="/about">
                   Learn More <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
 
-            <div className="relative">
+            <div className="relative reveal-on-scroll">
+              <div className="absolute -inset-4 bg-gradient-to-r from-blush-200 to-lavender-200 rounded-3xl opacity-20 animate-gentle-bounce"></div>
               <img
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80"
                 alt="Makeup artist at work"
-                className="rounded-2xl shadow-2xl animate-float"
+                className="relative rounded-3xl shadow-2xl animate-float hover:scale-105 transition-transform duration-500"
               />
             </div>
           </div>
@@ -168,50 +192,56 @@ const Home = () => {
       </section>
 
       {/* Services Preview */}
-      <section className="py-20 bg-card">
+      <section className="py-24 bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Services</h2>
-            <p className="text-xl text-muted-foreground">Professional makeup for every occasion</p>
+          <div className="text-center mb-16 reveal-on-scroll">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Our Luxury Services</h2>
+            <p className="text-xl text-muted-foreground font-light">Professional makeup for every special occasion 💅</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blush-500 to-wine-600 rounded-lg mb-4"></div>
-                <h3 className="text-xl font-semibold mb-2">Bridal Glam</h3>
-                <p className="text-muted-foreground mb-4">
-                  Complete bridal makeup with flawless finish for your special day
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-gradient-to-br from-blush-50 to-rosegold-50">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-r from-blush-400 to-rosegold-400 rounded-2xl mb-6 flex items-center justify-center">
+                  <span className="text-2xl">👰</span>
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair">Bridal Glam</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Complete bridal makeup with flawless finish for your special day ✨
                 </p>
-                <p className="text-primary font-semibold">From ₦100,000</p>
+                <p className="text-primary font-bold text-xl">From ₦100,000</p>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-wine-500 to-blush-600 rounded-lg mb-4"></div>
-                <h3 className="text-xl font-semibold mb-2">Casual Glam</h3>
-                <p className="text-muted-foreground mb-4">
-                  Perfect for events, parties, and special occasions
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-gradient-to-br from-lavender-50 to-champagne-50">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-r from-lavender-400 to-champagne-400 rounded-2xl mb-6 flex items-center justify-center">
+                  <span className="text-2xl">💃</span>
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair">Casual Glam</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Perfect for events, parties, and special occasions 💖
                 </p>
-                <p className="text-primary font-semibold">From ₦40,000</p>
+                <p className="text-primary font-bold text-xl">From ₦40,000</p>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-beige-500 to-blush-600 rounded-lg mb-4"></div>
-                <h3 className="text-xl font-semibold mb-2">Natural Look</h3>
-                <p className="text-muted-foreground mb-4">
-                  Subtle enhancement for a fresh, natural appearance
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-gradient-to-br from-peach-50 to-ivory-50">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-r from-peach-400 to-ivory-400 rounded-2xl mb-6 flex items-center justify-center">
+                  <span className="text-2xl">🌸</span>
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair">Natural Look</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Subtle enhancement for a fresh, natural appearance 🌿
                 </p>
-                <p className="text-primary font-semibold">From ₦25,000</p>
+                <p className="text-primary font-bold text-xl">From ₦25,000</p>
               </CardContent>
             </Card>
           </div>
 
-          <div className="text-center mt-12">
-            <Button asChild>
+          <div className="text-center mt-16 reveal-on-scroll">
+            <Button asChild size="lg" className="luxury-button rounded-full px-12 py-4 text-lg">
               <Link to="/services">View All Services</Link>
             </Button>
           </div>
@@ -219,30 +249,32 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20">
+      <section className="py-24 powder-bg">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12">What Our Clients Say</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-16 gradient-text reveal-on-scroll">Client Love 💖</h2>
           
-          <div className="relative">
-            <Card className="bg-gradient-to-r from-blush-50 to-wine-50 dark:from-blush-900/20 dark:to-wine-900/20">
-              <CardContent className="p-8">
-                <div className="flex justify-center mb-4">
+          <div className="relative reveal-on-scroll">
+            <Card className="bg-gradient-to-br from-white/80 to-blush-50/50 backdrop-blur-sm border-0 shadow-2xl">
+              <CardContent className="p-12">
+                <div className="flex justify-center mb-6">
                   {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    <Star key={i} className="h-6 w-6 text-yellow-400 fill-current animate-sparkle" style={{animationDelay: `${i * 0.2}s`}} />
                   ))}
                 </div>
-                <p className="text-lg italic mb-6">"{testimonials[currentTestimonial].text}"</p>
-                <p className="font-semibold text-primary">{testimonials[currentTestimonial].name}</p>
+                <p className="text-xl italic mb-8 leading-relaxed font-light">"{testimonials[currentTestimonial].text}"</p>
+                <p className="font-semibold text-primary text-lg font-playfair">{testimonials[currentTestimonial].name}</p>
               </CardContent>
             </Card>
 
-            <div className="flex justify-center mt-6 space-x-2">
+            <div className="flex justify-center mt-8 space-x-3">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentTestimonial ? 'bg-primary' : 'bg-muted'
+                  className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                    index === currentTestimonial 
+                      ? 'bg-primary scale-125 shadow-lg' 
+                      : 'bg-primary/30 hover:bg-primary/50'
                   }`}
                 />
               ))}
@@ -252,17 +284,26 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blush-500 to-wine-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Get Glammed Up?</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Book your makeup session today and let us bring out your natural beauty
+      <section className="py-24 bg-gradient-to-r from-blush-400 via-rosegold-400 to-lavender-400 text-white relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="sparkle"></div>
+          <div className="sparkle"></div>
+          <div className="sparkle"></div>
+        </div>
+        
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-8 font-playfair">Ready to Get Glammed Up? ✨</h2>
+          <p className="text-xl mb-12 opacity-95 font-light leading-relaxed">
+            Book your makeup session today and let us bring out your natural beauty 💖
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" variant="secondary" className="text-primary">
-              <Link to="/booking">Book Your Session</Link>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Button asChild size="lg" variant="secondary" className="text-primary rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
+              <Link to="/booking">
+                <Heart className="mr-2 h-5 w-5 animate-pulse-heart" />
+                Book Your Session
+              </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
               <Link to="/contact">Get in Touch</Link>
             </Button>
           </div>
