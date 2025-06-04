@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import AdminLogin from '@/components/AdminLogin';
 import { Upload, Plus, Trash2, Edit, Save, X, Calendar, User, LogOut } from 'lucide-react';
@@ -182,7 +181,7 @@ const Admin = () => {
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your makeup artistry business</p>
+            <p className="text-muted-foreground">Manage your Glow and Go business</p>
           </div>
           <Button onClick={handleLogout} variant="outline">
             <LogOut className="h-4 w-4 mr-2" />
@@ -191,18 +190,18 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-card">
+            <TabsTrigger value="bookings" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Bookings</TabsTrigger>
+            <TabsTrigger value="gallery" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Gallery</TabsTrigger>
+            <TabsTrigger value="services" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Services</TabsTrigger>
+            <TabsTrigger value="settings" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Settings</TabsTrigger>
           </TabsList>
 
           {/* Enhanced Bookings Management */}
           <TabsContent value="bookings" className="space-y-6">
-            <Card>
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-foreground">
+                <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <Calendar className="h-5 w-5" />
                   Booking Management
                 </CardTitle>
@@ -210,7 +209,7 @@ const Admin = () => {
               <CardContent>
                 <div className="mb-4 flex gap-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="p-4">
+                    <Card className="p-4 bg-background border-border">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-primary">
                           {bookingRequests.filter(b => b.status === 'pending').length}
@@ -218,7 +217,7 @@ const Admin = () => {
                         <div className="text-sm text-muted-foreground">Pending</div>
                       </div>
                     </Card>
-                    <Card className="p-4">
+                    <Card className="p-4 bg-background border-border">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
                           {bookingRequests.filter(b => b.status === 'confirmed').length}
@@ -226,7 +225,7 @@ const Admin = () => {
                         <div className="text-sm text-muted-foreground">Confirmed</div>
                       </div>
                     </Card>
-                    <Card className="p-4">
+                    <Card className="p-4 bg-background border-border">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-foreground">
                           {bookingRequests.length}
@@ -237,90 +236,92 @@ const Admin = () => {
                   </div>
                 </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-foreground">Client</TableHead>
-                      <TableHead className="text-foreground">Service</TableHead>
-                      <TableHead className="text-foreground">Date & Time</TableHead>
-                      <TableHead className="text-foreground">Contact</TableHead>
-                      <TableHead className="text-foreground">Status</TableHead>
-                      <TableHead className="text-foreground">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bookingRequests.map((booking) => (
-                      <TableRow key={booking.id}>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium text-foreground">{booking.name}</div>
-                            <div className="text-sm text-muted-foreground">{booking.location}</div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-foreground">{booking.service}</div>
-                          {booking.notes && (
-                            <div className="text-xs text-muted-foreground mt-1">{booking.notes}</div>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-foreground">{booking.date}</div>
-                          <div className="text-sm text-muted-foreground">{booking.time}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm text-foreground">{booking.phone}</div>
-                          <div className="text-xs text-muted-foreground">{booking.email}</div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
-                            {booking.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            {booking.status === 'pending' && (
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleStatusUpdate(booking.id, 'confirmed')}
-                              >
-                                Confirm
-                              </Button>
-                            )}
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleStatusUpdate(booking.id, 'cancelled')}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className="bg-card border border-border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="text-foreground font-semibold">Client</TableHead>
+                        <TableHead className="text-foreground font-semibold">Service</TableHead>
+                        <TableHead className="text-foreground font-semibold">Date & Time</TableHead>
+                        <TableHead className="text-foreground font-semibold">Contact</TableHead>
+                        <TableHead className="text-foreground font-semibold">Status</TableHead>
+                        <TableHead className="text-foreground font-semibold">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {bookingRequests.map((booking) => (
+                        <TableRow key={booking.id} className="hover:bg-muted/50">
+                          <TableCell>
+                            <div>
+                              <div className="font-medium text-foreground">{booking.name}</div>
+                              <div className="text-sm text-muted-foreground">{booking.location}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-foreground">{booking.service}</div>
+                            {booking.notes && (
+                              <div className="text-xs text-muted-foreground mt-1">{booking.notes}</div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-foreground">{booking.date}</div>
+                            <div className="text-sm text-muted-foreground">{booking.time}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm text-foreground">{booking.phone}</div>
+                            <div className="text-xs text-muted-foreground">{booking.email}</div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
+                              {booking.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              {booking.status === 'pending' && (
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleStatusUpdate(booking.id, 'confirmed')}
+                                >
+                                  Confirm
+                                </Button>
+                              )}
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleStatusUpdate(booking.id, 'cancelled')}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Gallery Management */}
           <TabsContent value="gallery" className="space-y-6">
-            <Card>
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-card-foreground">
                   <Upload className="h-5 w-5" />
-                  Gallery Management
+                  Gallery Management - Fast Upload
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div>
-                    <Label htmlFor="imageCategory">Category</Label>
+                    <Label htmlFor="imageCategory" className="text-foreground">Category</Label>
                     <Select onValueChange={(value) => setNewGalleryImage(prev => ({ ...prev, category: value }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background border-border text-foreground">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-card border-border">
                         <SelectItem value="bridal">Bridal</SelectItem>
                         <SelectItem value="casual">Casual</SelectItem>
                         <SelectItem value="natural">Natural</SelectItem>
@@ -328,19 +329,20 @@ const Admin = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="imageAlt">Alt Text</Label>
+                    <Label htmlFor="imageAlt" className="text-foreground">Alt Text</Label>
                     <Input
                       id="imageAlt"
                       placeholder="Describe the image"
                       value={newGalleryImage.alt}
                       onChange={(e) => setNewGalleryImage(prev => ({ ...prev, alt: e.target.value }))}
+                      className="bg-background border-border text-foreground"
                     />
                   </div>
                   <div className="flex items-end">
-                    <Label htmlFor="imageUpload" className="cursor-pointer">
-                      <div className="border-2 border-dashed border-muted rounded-lg p-4 text-center hover:border-primary transition-colors">
+                    <Label htmlFor="imageUpload" className="cursor-pointer w-full">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary transition-colors bg-background">
                         <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                        <span className="text-sm">Upload Image</span>
+                        <span className="text-sm text-foreground">Upload Image</span>
                       </div>
                       <Input
                         id="imageUpload"

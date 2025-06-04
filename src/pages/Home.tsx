@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, ArrowRight, Heart } from 'lucide-react';
@@ -61,7 +60,7 @@ const Home = () => {
   return (
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=1920&q=80"
@@ -91,7 +90,7 @@ const Home = () => {
         
         <div className="relative z-10 text-center max-w-4xl px-4">
           <h1 className="text-6xl md:text-8xl font-bold mb-6 animate-fade-in text-shadow-soft">
-            <span className="gradient-text font-playfair">Glam by GAG</span>
+            <span className="gradient-text font-playfair">Glow and Go</span>
           </h1>
           <p className="text-xl md:text-3xl mb-4 text-foreground/90 animate-slide-up font-light tracking-wide">
             Where your beauty meets elegance
@@ -103,7 +102,7 @@ const Home = () => {
             <Button asChild size="lg" className="luxury-button text-xl px-12 py-4 rounded-full font-medium">
               <Link to="/booking">✨ Book Your Glam ✨</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-xl px-12 py-4 rounded-full border-2 border-primary/30 hover:border-primary bg-white/20 backdrop-blur-sm">
+            <Button asChild variant="outline" size="lg" className="text-xl px-12 py-4 rounded-full border-2 border-primary/30 hover:border-primary bg-background/20 backdrop-blur-sm text-foreground">
               <Link to="/gallery">View Portfolio</Link>
             </Button>
           </div>
@@ -111,7 +110,7 @@ const Home = () => {
       </section>
 
       {/* Gallery Showcase */}
-      <section className="py-24 powder-bg">
+      <section className="py-24 powder-bg bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 reveal-on-scroll">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Recent Transformations</h2>
@@ -159,13 +158,13 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-24 bg-gradient-to-r from-ivory-50 to-peach-50">
+      <section className="py-24 bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="reveal-on-scroll">
-              <h2 className="text-4xl md:text-5xl font-bold mb-8 gradient-text">About Glam by GAG</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 gradient-text">About Glow and Go</h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                Glam by GAG is your go-to bridal and casual glam studio. We specialize in flawless skin finishes, 
+                Glow and Go is your go-to bridal and casual glam studio. We specialize in flawless skin finishes, 
                 elegant eye makeup, and defined lips that bring out confidence and radiance in every client. ✨
               </p>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -192,7 +191,7 @@ const Home = () => {
       </section>
 
       {/* Services Preview */}
-      <section className="py-24 bg-card">
+      <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 reveal-on-scroll">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Our Luxury Services</h2>
@@ -200,12 +199,12 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-gradient-to-br from-blush-50 to-rosegold-50">
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-card">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-blush-400 to-rosegold-400 rounded-2xl mb-6 flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
                   <span className="text-2xl">👰</span>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 font-playfair">Bridal Glam</h3>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair text-card-foreground">Bridal Glam</h3>
                 <p className="text-muted-foreground mb-6 leading-relaxed">
                   Complete bridal makeup with flawless finish for your special day ✨
                 </p>
@@ -213,12 +212,12 @@ const Home = () => {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-gradient-to-br from-lavender-50 to-champagne-50">
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-card">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-lavender-400 to-champagne-400 rounded-2xl mb-6 flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
                   <span className="text-2xl">💃</span>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 font-playfair">Casual Glam</h3>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair text-card-foreground">Casual Glam</h3>
                 <p className="text-muted-foreground mb-6 leading-relaxed">
                   Perfect for events, parties, and special occasions 💖
                 </p>
@@ -226,12 +225,12 @@ const Home = () => {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-gradient-to-br from-peach-50 to-ivory-50">
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-card">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-peach-400 to-ivory-400 rounded-2xl mb-6 flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
                   <span className="text-2xl">🌸</span>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 font-playfair">Natural Look</h3>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair text-card-foreground">Natural Look</h3>
                 <p className="text-muted-foreground mb-6 leading-relaxed">
                   Subtle enhancement for a fresh, natural appearance 🌿
                 </p>
@@ -249,19 +248,19 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 powder-bg">
+      <section className="py-24 powder-bg bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-16 gradient-text reveal-on-scroll">Client Love 💖</h2>
           
           <div className="relative reveal-on-scroll">
-            <Card className="bg-gradient-to-br from-white/80 to-blush-50/50 backdrop-blur-sm border-0 shadow-2xl">
+            <Card className="bg-card/90 backdrop-blur-sm border-0 shadow-2xl">
               <CardContent className="p-12">
                 <div className="flex justify-center mb-6">
                   {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                    <Star key={i} className="h-6 w-6 text-yellow-400 fill-current animate-sparkle" style={{animationDelay: `${i * 0.2}s`}} />
+                    <Star key={i} className="h-6 w-6 text-primary fill-current animate-sparkle" style={{animationDelay: `${i * 0.2}s`}} />
                   ))}
                 </div>
-                <p className="text-xl italic mb-8 leading-relaxed font-light">"{testimonials[currentTestimonial].text}"</p>
+                <p className="text-xl italic mb-8 leading-relaxed font-light text-card-foreground">"{testimonials[currentTestimonial].text}"</p>
                 <p className="font-semibold text-primary text-lg font-playfair">{testimonials[currentTestimonial].name}</p>
               </CardContent>
             </Card>
@@ -284,7 +283,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-blush-400 via-rosegold-400 to-lavender-400 text-white relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="sparkle"></div>
           <div className="sparkle"></div>
@@ -303,7 +302,7 @@ const Home = () => {
                 Book Your Session
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
+            <Button asChild size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
               <Link to="/contact">Get in Touch</Link>
             </Button>
           </div>

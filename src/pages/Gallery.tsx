@@ -79,11 +79,11 @@ const Gallery = () => {
     : galleryImages.filter(img => img.category === activeFilter);
 
   return (
-    <div className="min-h-screen py-20">
+    <div className="min-h-screen py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             Our <span className="gradient-text">Portfolio</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -160,8 +160,8 @@ const Gallery = () => {
 
         {/* CTA Section */}
         <section className="mt-20 text-center">
-          <div className="bg-gradient-to-r from-blush-50 to-wine-50 dark:from-blush-900/20 dark:to-wine-900/20 p-12 rounded-2xl">
-            <h2 className="text-3xl font-bold mb-4">Love What You See?</h2>
+          <div className="bg-card p-12 rounded-2xl border border-border">
+            <h2 className="text-3xl font-bold mb-4 text-card-foreground">Love What You See?</h2>
             <p className="text-xl text-muted-foreground mb-8">
               Book your makeup session and let's create something beautiful together
             </p>
