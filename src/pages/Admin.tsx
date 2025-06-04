@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import AdminLogin from '@/components/AdminLogin';
 import { Upload, Plus, Trash2, Edit, Save, X, Calendar, User, LogOut } from 'lucide-react';
@@ -87,6 +88,78 @@ const Admin = () => {
     toast({
       title: "Booking Updated",
       description: `Booking status changed to ${newStatus}`,
+    });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && newGalleryImage.category && newGalleryImage.alt) {
+      // In a real app, you would upload to a server/cloud storage
+      const newImage = {
+        id: Date.now(),
+        src: URL.createObjectURL(file),
+        category: newGalleryImage.category,
+        alt: newGalleryImage.alt
+      };
+      setGalleryImages(prev => [...prev, newImage]);
+      setNewGalleryImage({ file: null, category: '', alt: '' });
+      toast({
+        title: "Image Uploaded",
+        description: "New image added to gallery",
+      });
+    } else {
+      toast({
+        title: "Upload Error",
+        description: "Please select category and add alt text",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteImage = (imageId: number) => {
+    setGalleryImages(prev => prev.filter(img => img.id !== imageId));
+    toast({
+      title: "Image Deleted",
+      description: "Image removed from gallery",
+    });
+  };
+
+  const handleAddService = () => {
+    const newService = {
+      id: Date.now(),
+      name: 'New Service',
+      price: 0,
+      category: 'casual'
+    };
+    setServices(prev => [...prev, newService]);
+    setIsEditingService(newService.id);
+    toast({
+      title: "Service Added",
+      description: "New service created",
+    });
+  };
+
+  const handleServiceUpdate = (serviceId: number, field: string, value: string | number) => {
+    setServices(prev => 
+      prev.map(service => 
+        service.id === serviceId ? { ...service, [field]: value } : service
+      )
+    );
+  };
+
+  const handleSaveService = (serviceId: number) => {
+    setIsEditingService(null);
+    toast({
+      title: "Service Saved",
+      description: "Service updated successfully",
+    });
+  };
+
+  const handleDeleteService = (serviceId: number) => {
+    setServices(prev => prev.filter(service => service.id !== serviceId));
+    toast({
+      title: "Service Deleted",
+      description: "Service removed successfully",
     });
   };
 
