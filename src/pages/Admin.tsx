@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
-import { Upload, Plus, Trash2, Edit, Save, X } from 'lucide-react';
+import AdminLogin from '@/components/AdminLogin';
+import { Upload, Plus, Trash2, Edit, Save, X, Calendar, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,13 +10,59 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 
 const Admin = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isEditingService, setIsEditingService] = useState<number | null>(null);
   const [newGalleryImage, setNewGalleryImage] = useState({ file: null, category: '', alt: '' });
   const [bookingAvailability, setBookingAvailability] = useState(true);
   const { toast } = useToast();
+
+  // Mock booking data - in real app, this would come from database
+  const [bookingRequests, setBookingRequests] = useState([
+    { 
+      id: 1, 
+      name: 'Amina Hassan', 
+      phone: '+234 801 234 5678',
+      email: 'amina@email.com',
+      service: 'Studio Bridal Glam', 
+      date: '2024-07-15', 
+      time: '10:00 AM',
+      location: 'Kaduna',
+      notes: 'Need makeup for traditional wedding',
+      status: 'pending',
+      createdAt: '2024-06-28'
+    },
+    { 
+      id: 2, 
+      name: 'Fatima Ibrahim', 
+      phone: '+234 802 345 6789',
+      email: 'fatima@email.com',
+      service: 'Home Service Casual', 
+      date: '2024-07-20', 
+      time: '2:00 PM',
+      location: 'Abuja',
+      notes: 'Birthday photoshoot',
+      status: 'confirmed',
+      createdAt: '2024-06-29'
+    },
+    { 
+      id: 3, 
+      name: 'Khadijah Musa', 
+      phone: '+234 803 456 7890',
+      email: 'khadijah@email.com',
+      service: 'Studio Natural Glam', 
+      date: '2024-07-25', 
+      time: '11:30 AM',
+      location: 'Kaduna',
+      notes: 'Corporate headshots',
+      status: 'pending',
+      createdAt: '2024-06-30'
+    }
+  ]);
 
   // Mock data - in a real app, this would come from a database
   const [services, setServices] = useState([
@@ -32,89 +78,157 @@ const Admin = () => {
     { id: 3, src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80', category: 'natural', alt: 'Natural look' }
   ]);
 
-  const [bookingRequests] = useState([
-    { id: 1, name: 'Amina Hassan', service: 'Studio Bridal Glam', date: '2024-07-15', status: 'pending' },
-    { id: 2, name: 'Fatima Ibrahim', service: 'Home Service Casual', date: '2024-07-20', status: 'confirmed' },
-    { id: 3, name: 'Khadijah Musa', service: 'Studio Natural Glam', date: '2024-07-25', status: 'pending' }
-  ]);
-
-  const handleServiceUpdate = (id: number, field: string, value: string | number) => {
-    setServices(prev => prev.map(service => 
-      service.id === id ? { ...service, [field]: value } : service
-    ));
-  };
-
-  const handleSaveService = (id: number) => {
-    setIsEditingService(null);
+  const handleStatusUpdate = (bookingId: number, newStatus: string) => {
+    setBookingRequests(prev => 
+      prev.map(booking => 
+        booking.id === bookingId ? { ...booking, status: newStatus } : booking
+      )
+    );
     toast({
-      title: "Service Updated",
-      description: "Service has been successfully updated.",
+      title: "Booking Updated",
+      description: `Booking status changed to ${newStatus}`,
     });
   };
 
-  const handleDeleteService = (id: number) => {
-    setServices(prev => prev.filter(service => service.id !== id));
+  const handleLogout = () => {
+    setIsLoggedIn(false);
     toast({
-      title: "Service Deleted",
-      description: "Service has been removed from the system.",
+      title: "Logged Out",
+      description: "You have been successfully logged out",
     });
   };
 
-  const handleAddService = () => {
-    const newService = {
-      id: Date.now(),
-      name: 'New Service',
-      price: 0,
-      category: 'casual'
-    };
-    setServices(prev => [...prev, newService]);
-    setIsEditingService(newService.id);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // In a real app, you would upload to a cloud storage service
-      const mockUrl = URL.createObjectURL(file);
-      const newImage = {
-        id: Date.now(),
-        src: mockUrl,
-        category: newGalleryImage.category,
-        alt: newGalleryImage.alt || 'Gallery image'
-      };
-      setGalleryImages(prev => [...prev, newImage]);
-      setNewGalleryImage({ file: null, category: '', alt: '' });
-      toast({
-        title: "Image Uploaded",
-        description: "New image has been added to the gallery.",
-      });
-    }
-  };
-
-  const handleDeleteImage = (id: number) => {
-    setGalleryImages(prev => prev.filter(img => img.id !== id));
-    toast({
-      title: "Image Deleted",
-      description: "Image has been removed from the gallery.",
-    });
-  };
+  if (!isLoggedIn) {
+    return <AdminLogin onLogin={() => setIsLoggedIn(true)} />;
+  }
 
   return (
-    <div className="min-h-screen py-20">
+    <div className="min-h-screen py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage your makeup artistry business</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage your makeup artistry business</p>
+          </div>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
         </div>
 
-        <Tabs defaultValue="gallery" className="w-full">
+        <Tabs defaultValue="bookings" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
+
+          {/* Enhanced Bookings Management */}
+          <TabsContent value="bookings" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Calendar className="h-5 w-5" />
+                  Booking Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">
+                          {bookingRequests.filter(b => b.status === 'pending').length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Pending</div>
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {bookingRequests.filter(b => b.status === 'confirmed').length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Confirmed</div>
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-foreground">
+                          {bookingRequests.length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Total</div>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-foreground">Client</TableHead>
+                      <TableHead className="text-foreground">Service</TableHead>
+                      <TableHead className="text-foreground">Date & Time</TableHead>
+                      <TableHead className="text-foreground">Contact</TableHead>
+                      <TableHead className="text-foreground">Status</TableHead>
+                      <TableHead className="text-foreground">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {bookingRequests.map((booking) => (
+                      <TableRow key={booking.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium text-foreground">{booking.name}</div>
+                            <div className="text-sm text-muted-foreground">{booking.location}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-foreground">{booking.service}</div>
+                          {booking.notes && (
+                            <div className="text-xs text-muted-foreground mt-1">{booking.notes}</div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-foreground">{booking.date}</div>
+                          <div className="text-sm text-muted-foreground">{booking.time}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-foreground">{booking.phone}</div>
+                          <div className="text-xs text-muted-foreground">{booking.email}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
+                            {booking.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {booking.status === 'pending' && (
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleStatusUpdate(booking.id, 'confirmed')}
+                              >
+                                Confirm
+                              </Button>
+                            )}
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleStatusUpdate(booking.id, 'cancelled')}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Gallery Management */}
           <TabsContent value="gallery" className="space-y-6">
@@ -257,42 +371,6 @@ const Admin = () => {
                           </div>
                         </div>
                       )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Bookings Management */}
-          <TabsContent value="bookings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Booking Requests</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {bookingRequests.map((booking) => (
-                    <div key={booking.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="font-medium">{booking.name}</h3>
-                          <p className="text-sm text-muted-foreground">{booking.service}</p>
-                          <p className="text-sm text-muted-foreground">Date: {booking.date}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            booking.status === 'confirmed' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {booking.status}
-                          </span>
-                          {booking.status === 'pending' && (
-                            <Button size="sm">Confirm</Button>
-                          )}
-                        </div>
-                      </div>
                     </div>
                   ))}
                 </div>

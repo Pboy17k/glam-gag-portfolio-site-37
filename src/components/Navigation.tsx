@@ -44,8 +44,8 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blush-500 to-wine-600 rounded-full"></div>
-            <span className="text-xl font-bold gradient-text">Glam by GAG</span>
+            <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary/80 rounded-full"></div>
+            <span className="text-xl font-bold text-foreground">Glam by GAG</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -55,7 +55,7 @@ const Navigation = () => {
                 key={item.name}
                 to={item.href}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(item.href) ? 'text-primary' : 'text-muted-foreground'
+                  isActive(item.href) ? 'text-primary' : 'text-foreground'
                 }`}
               >
                 {item.name}
@@ -94,7 +94,7 @@ const Navigation = () => {
                   key={item.name}
                   to={item.href}
                   className={`block px-3 py-2 text-base font-medium transition-colors hover:text-primary ${
-                    isActive(item.href) ? 'text-primary' : 'text-muted-foreground'
+                    isActive(item.href) ? 'text-primary' : 'text-foreground'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
