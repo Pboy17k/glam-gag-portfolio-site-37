@@ -67,7 +67,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Luxury makeup artist colors
+				// Professional makeup artist colors - cooler tones
 				blush: {
 					50: '#fef7f4',
 					100: '#fdebe4',
@@ -107,18 +107,19 @@ export default {
 					900: '#541fa1',
 					950: '#36106e'
 				},
-				ivory: {
-					50: '#fffffe',
-					100: '#fffef9',
-					200: '#fffcf1',
-					300: '#fff7e0',
-					400: '#ffedc4',
-					500: '#fedda2',
-					600: '#fdc972',
-					700: '#fbad3e',
-					800: '#f6941d',
-					900: '#cd7912',
-					950: '#8b4d07'
+				// Replaced ivory with cooler pearl tones
+				pearl: {
+					50: '#fefffe',
+					100: '#fefefc',
+					200: '#fefcf8',
+					300: '#fdf9f0',
+					400: '#fcf3e4',
+					500: '#fae8d1',
+					600: '#f4d4a7',
+					700: '#e8b875',
+					800: '#d49a4a',
+					900: '#b8802e',
+					950: '#634419'
 				},
 				peach: {
 					50: '#fffaf7',
@@ -133,18 +134,19 @@ export default {
 					900: '#7f3819',
 					950: '#451b0b'
 				},
-				champagne: {
-					50: '#fefcf3',
-					100: '#fdf7e0',
-					200: '#faecc1',
-					300: '#f5db96',
-					400: '#efc469',
-					500: '#e7ac47',
-					600: '#d3913b',
-					700: '#b07432',
-					800: '#8f5d31',
-					900: '#744d2b',
-					950: '#3f2715'
+				// Replaced champagne with cooler silver tones
+				silver: {
+					50: '#f9f9f9',
+					100: '#f2f2f2',
+					200: '#e6e6e6',
+					300: '#d1d1d1',
+					400: '#b5b5b5',
+					500: '#969696',
+					600: '#7a7a7a',
+					700: '#656565',
+					800: '#565656',
+					900: '#4a4a4a',
+					950: '#2e2e2e'
 				},
 				wine: {
 					50: '#fdf4f8',
@@ -171,6 +173,20 @@ export default {
 					800: '#634563',
 					900: '#533b53',
 					950: '#342132'
+				},
+				// New grey-violet palette
+				greyviolet: {
+					50: '#faf9fb',
+					100: '#f3f1f6',
+					200: '#e8e4ed',
+					300: '#d6cfdc',
+					400: '#beb1c7',
+					500: '#a594b0',
+					600: '#8d7a98',
+					700: '#746580',
+					800: '#625669',
+					900: '#524956',
+					950: '#342f37'
 				}
 			},
 			borderRadius: {
@@ -233,10 +249,9 @@ export default {
 				'gentle-bounce': 'gentle-bounce 2s ease-in-out infinite'
 			},
 			backgroundImage: {
-				'powder-texture': "radial-gradient(circle at 50% 50%, rgba(251, 218, 201, 0.3) 0%, rgba(253, 235, 228, 0.1) 50%, transparent 100%)",
-				'champagne-shimmer': 'linear-gradient(135deg, #fef7f4, #fdf7e0, #fce8f2)',
-				'luxury-gradient': 'linear-gradient(135deg, #fef7f4 0%, #fce8f2 25%, #f1ebff 50%, #fef6f3 75%, #fffcf1 100%)',
-				'dark-luxury': 'linear-gradient(135deg, #2a1a2e 0%, #16213e 50%, #0f3460 100%)'
+				'powder-texture': "radial-gradient(circle at 50% 50%, rgba(165, 148, 176, 0.2) 0%, rgba(243, 241, 246, 0.1) 50%, transparent 100%)",
+				'luxury-gradient': 'linear-gradient(135deg, #fefffe 0%, #fce8f2 25%, #f1ebff 50%, #fef6f3 75%, #f9f9f9 100%)',
+				'dark-luxury': 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%)'
 			}
 		}
 	},
