@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import AdminLogin from '@/components/AdminLogin';
 import AdminGalleryUpload from '@/components/AdminGalleryUpload';
@@ -86,6 +87,45 @@ const Admin = () => {
     toast({
       title: "Booking Updated",
       description: `Booking status changed to ${newStatus}`,
+    });
+  };
+
+  const handleAddService = () => {
+    const newService = {
+      id: Date.now(),
+      name: 'New Service',
+      price: 0,
+      category: 'casual'
+    };
+    setServices(prev => [...prev, newService]);
+    setIsEditingService(newService.id);
+    toast({
+      title: "Service Added",
+      description: "New service created. Please edit the details.",
+    });
+  };
+
+  const handleServiceUpdate = (serviceId: number, field: string, value: string | number) => {
+    setServices(prev =>
+      prev.map(service =>
+        service.id === serviceId ? { ...service, [field]: value } : service
+      )
+    );
+  };
+
+  const handleSaveService = (serviceId: number) => {
+    setIsEditingService(null);
+    toast({
+      title: "Service Saved",
+      description: "Service details have been updated.",
+    });
+  };
+
+  const handleDeleteService = (serviceId: number) => {
+    setServices(prev => prev.filter(service => service.id !== serviceId));
+    toast({
+      title: "Service Deleted",
+      description: "Service has been removed.",
     });
   };
 
