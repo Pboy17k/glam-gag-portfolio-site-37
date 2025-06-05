@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, ArrowRight, Heart } from 'lucide-react';
@@ -96,11 +97,11 @@ const Home = () => {
             Where your beauty meets elegance
           </p>
           <p className="text-lg md:text-xl mb-8 text-muted-foreground animate-slide-up">
-            Professional Makeup Artistry for Your Special Moments ✨
+            Professional Makeup Artistry & Training for Your Special Moments ✨
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-zoom-in">
             <Button asChild size="lg" className="luxury-button text-xl px-12 py-4 rounded-full font-medium">
-              <Link to="/booking">✨ Book Your Glam ✨</Link>
+              <Link to="/booking">✨ Book Your Session ✨</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="text-xl px-12 py-4 rounded-full border-2 border-primary/30 hover:border-primary bg-background/20 backdrop-blur-sm text-foreground">
               <Link to="/gallery">View Portfolio</Link>
@@ -167,9 +168,13 @@ const Home = () => {
                 Glow and Go is your go-to bridal and casual glam studio. We specialize in flawless skin finishes, 
                 elegant eye makeup, and defined lips that bring out confidence and radiance in every client. ✨
               </p>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
                 With years of experience and a passion for beauty, we use only high-end products and maintain 
                 the highest standards of hygiene to ensure every client feels pampered and beautiful. 💖
+              </p>
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                We also offer professional makeup training courses for aspiring makeup artists who want to 
+                learn the secrets of the trade and build their own successful beauty careers. 🎓
               </p>
               <Button asChild className="luxury-button rounded-full px-8 py-3">
                 <Link to="/about">
@@ -179,7 +184,7 @@ const Home = () => {
             </div>
 
             <div className="relative reveal-on-scroll">
-              <div className="absolute -inset-4 bg-gradient-to-r from-blush-200 to-lavender-200 rounded-3xl opacity-20 animate-gentle-bounce"></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl opacity-20 animate-gentle-bounce"></div>
               <img
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80"
                 alt="Makeup artist at work"
@@ -195,11 +200,11 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 reveal-on-scroll">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Our Luxury Services</h2>
-            <p className="text-xl text-muted-foreground font-light">Professional makeup for every special occasion 💅</p>
+            <p className="text-xl text-muted-foreground font-light">Professional makeup and training for every special occasion 💅</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-card">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll border-0 bg-card">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
                   <span className="text-2xl">👰</span>
@@ -212,7 +217,7 @@ const Home = () => {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-card">
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll border-0 bg-card">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
                   <span className="text-2xl">💃</span>
@@ -225,7 +230,7 @@ const Home = () => {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll luxury-button border-0 bg-card">
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll border-0 bg-card">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
                   <span className="text-2xl">🌸</span>
@@ -235,6 +240,19 @@ const Home = () => {
                   Subtle enhancement for a fresh, natural appearance 🌿
                 </p>
                 <p className="text-primary font-bold text-xl">From ₦25,000</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-2xl transition-all duration-500 reveal-on-scroll border-0 bg-card">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-6 flex items-center justify-center">
+                  <span className="text-2xl">🎓</span>
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 font-playfair text-card-foreground">Makeup Training</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Professional courses for aspiring makeup artists 📚
+                </p>
+                <p className="text-primary font-bold text-xl">From ₦50,000</p>
               </CardContent>
             </Card>
           </div>
@@ -282,8 +300,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground relative overflow-hidden">
+      {/* CTA Section with Dark Background */}
+      <section className="py-24 cta-dark relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="sparkle"></div>
           <div className="sparkle"></div>
@@ -291,18 +309,18 @@ const Home = () => {
         </div>
         
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 font-playfair">Ready to Get Glammed Up? ✨</h2>
-          <p className="text-xl mb-12 opacity-95 font-light leading-relaxed">
+          <h2 className="text-4xl md:text-5xl font-bold mb-8 font-playfair text-white">Ready to Get Glammed Up? ✨</h2>
+          <p className="text-xl mb-12 text-white/90 font-light leading-relaxed">
             Book your makeup session today and let us bring out your natural beauty 💖
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button asChild size="lg" variant="secondary" className="text-primary rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
+            <Button asChild size="lg" variant="secondary" className="text-foreground bg-white hover:bg-gray-100 rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
               <Link to="/booking">
                 <Heart className="mr-2 h-5 w-5 animate-pulse-heart" />
                 Book Your Session
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
+            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 get-in-touch-visible rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
               <Link to="/contact">Get in Touch</Link>
             </Button>
           </div>

@@ -108,6 +108,40 @@ const Services = () => {
       ],
       category: 'evening',
       popular: false
+    },
+    {
+      id: 7,
+      name: 'Basic Makeup Training',
+      price: '₦50,000',
+      duration: '2 weeks',
+      location: 'Studio',
+      description: 'Learn the fundamentals of makeup artistry with hands-on training.',
+      features: [
+        'Basic makeup techniques',
+        'Product knowledge',
+        'Color theory',
+        'Practice on models',
+        'Certificate of completion'
+      ],
+      category: 'training',
+      popular: false
+    },
+    {
+      id: 8,
+      name: 'Advanced Makeup Training',
+      price: '₦100,000',
+      duration: '1 month',
+      location: 'Studio',
+      description: 'Comprehensive professional makeup training program.',
+      features: [
+        'Advanced techniques',
+        'Bridal makeup specialization',
+        'Business setup guidance',
+        'Portfolio development',
+        'Professional certification'
+      ],
+      category: 'training',
+      popular: true
     }
   ];
 
@@ -122,13 +156,15 @@ const Services = () => {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'bridal':
-        return 'bg-blush-100 text-blush-800 dark:bg-blush-900/30 dark:text-blush-300';
+        return 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300';
       case 'casual':
-        return 'bg-greyviolet-100 text-greyviolet-800 dark:bg-greyviolet-900/30 dark:text-greyviolet-300';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
       case 'natural':
-        return 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
       case 'evening':
-        return 'bg-wine-100 text-wine-800 dark:bg-wine-900/30 dark:text-wine-300';
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
+      case 'training':
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
       default:
         return 'bg-secondary text-secondary-foreground';
     }
@@ -143,19 +179,19 @@ const Services = () => {
             Our <span className="gradient-text">Services</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            From bridal transformations to casual glam, we offer comprehensive makeup services 
+            From bridal transformations to professional training, we offer comprehensive makeup services 
             tailored to enhance your natural beauty for any occasion.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Badge variant="outline" className="text-sm py-2 px-4 bg-card border-greyviolet-200 text-greyviolet-700 dark:border-greyviolet-700 dark:text-greyviolet-300">
+            <Badge variant="outline" className="text-sm py-2 px-4 bg-card border-border text-foreground">
               <Star className="h-4 w-4 mr-2" />
               Professional Certified
             </Badge>
-            <Badge variant="outline" className="text-sm py-2 px-4 bg-card border-greyviolet-200 text-greyviolet-700 dark:border-greyviolet-700 dark:text-greyviolet-300">
+            <Badge variant="outline" className="text-sm py-2 px-4 bg-card border-border text-foreground">
               <Heart className="h-4 w-4 mr-2" />
               Premium Products
             </Badge>
-            <Badge variant="outline" className="text-sm py-2 px-4 bg-card border-greyviolet-200 text-greyviolet-700 dark:border-greyviolet-700 dark:text-greyviolet-300">
+            <Badge variant="outline" className="text-sm py-2 px-4 bg-card border-border text-foreground">
               <Sparkles className="h-4 w-4 mr-2" />
               Customized Looks
             </Badge>
@@ -284,8 +320,8 @@ const Services = () => {
               }
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-greyviolet-100 dark:bg-greyviolet-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-greyviolet-600 dark:text-greyviolet-400">{item.step}</span>
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-primary">{item.step}</span>
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{item.title}</h3>
                 <p className="text-muted-foreground">{item.description}</p>
@@ -296,7 +332,7 @@ const Services = () => {
 
         {/* CTA Section */}
         <section className="text-center">
-          <Card className="bg-gradient-to-br from-greyviolet-50 to-pearl-50 dark:from-greyviolet-950/50 dark:to-card border-greyviolet-200 dark:border-greyviolet-800">
+          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
             <CardContent className="p-12">
               <h2 className="text-3xl font-bold text-foreground mb-4">
                 Ready to Transform Your Look?

@@ -1,11 +1,11 @@
 
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, Image as ImageIcon, Trash2, Check } from 'lucide-react';
+import { Trash2, Upload, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface GalleryImage {
@@ -21,234 +21,200 @@ interface AdminGalleryUploadProps {
 }
 
 const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps) => {
-  const [dragOver, setDragOver] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploadSettings, setUploadSettings] = useState({
-    category: '',
-    altPrefix: ''
-  });
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [newImage, setNewImage] = useState({ src: '', category: 'bridal', alt: '' });
   const { toast } = useToast();
 
-  const handleDragOver = (e: React.DragEvent) => {
+  // Load images from localStorage on component mount
+  useEffect(() => {
+    const savedImages = localStorage.getItem('galleryImages');
+    if (savedImages) {
+      try {
+        const parsedImages = JSON.parse(savedImages);
+        onImagesUpdate(parsedImages);
+      } catch (error) {
+        console.error('Error loading images from localStorage:', error);
+      }
+    }
+  }, [onImagesUpdate]);
+
+  // Save images to localStorage whenever images change
+  useEffect(() => {
+    localStorage.setItem('galleryImages', JSON.stringify(images));
+  }, [images]);
+
+  const handleAddImage = (e: React.FormEvent) => {
     e.preventDefault();
-    setDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/')
-    );
-    setSelectedFiles(prev => [...prev, ...files]);
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setSelectedFiles(prev => [...prev, ...files]);
-  };
-
-  const removeSelectedFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const uploadImages = async () => {
-    if (!uploadSettings.category || selectedFiles.length === 0) {
+    
+    if (!newImage.src || !newImage.alt) {
       toast({
-        title: "Upload Error",
-        description: "Please select category and at least one image",
+        title: "Error",
+        description: "Please fill in all required fields",
         variant: "destructive",
       });
       return;
     }
 
-    setUploading(true);
-    
-    try {
-      const newImages: GalleryImage[] = selectedFiles.map((file, index) => ({
-        id: Date.now() + index,
-        src: URL.createObjectURL(file),
-        category: uploadSettings.category,
-        alt: uploadSettings.altPrefix ? 
-          `${uploadSettings.altPrefix} ${index + 1}` : 
-          `${uploadSettings.category} makeup ${index + 1}`
-      }));
+    const newImageData: GalleryImage = {
+      id: Date.now(),
+      src: newImage.src,
+      category: newImage.category,
+      alt: newImage.alt
+    };
 
-      onImagesUpdate([...images, ...newImages]);
-      setSelectedFiles([]);
-      setUploadSettings({ category: '', altPrefix: '' });
-      
-      toast({
-        title: "Upload Successful",
-        description: `${newImages.length} image(s) uploaded successfully`,
-      });
-    } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "There was an error uploading your images",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
+    const updatedImages = [...images, newImageData];
+    onImagesUpdate(updatedImages);
+    
+    setNewImage({ src: '', category: 'bridal', alt: '' });
+    
+    toast({
+      title: "Success",
+      description: "Image added to gallery successfully!",
+    });
   };
 
-  const deleteImage = (imageId: number) => {
-    onImagesUpdate(images.filter(img => img.id !== imageId));
+  const handleDeleteImage = (imageId: number) => {
+    const updatedImages = images.filter(img => img.id !== imageId);
+    onImagesUpdate(updatedImages);
+    
     toast({
-      title: "Image Deleted",
+      title: "Deleted",
       description: "Image removed from gallery",
     });
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setNewImage(prev => ({ ...prev, src: result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Bulk Upload Section */}
-      <Card className="bg-card border-border">
+      {/* Add New Image Form */}
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-card-foreground">
-            <Upload className="h-5 w-5" />
-            Bulk Image Upload
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Add New Image
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Upload Settings */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="category" className="text-foreground">Category</Label>
-              <Select onValueChange={(value) => setUploadSettings(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger className="bg-background border-border text-foreground">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border">
-                  <SelectItem value="bridal">Bridal</SelectItem>
-                  <SelectItem value="casual">Casual Glam</SelectItem>
-                  <SelectItem value="natural">Natural Look</SelectItem>
-                  <SelectItem value="evening">Evening Glam</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="altPrefix" className="text-foreground">Alt Text Prefix (Optional)</Label>
-              <Input
-                id="altPrefix"
-                placeholder="e.g., Wedding makeup"
-                value={uploadSettings.altPrefix}
-                onChange={(e) => setUploadSettings(prev => ({ ...prev, altPrefix: e.target.value }))}
-                className="bg-background border-border text-foreground"
-              />
-            </div>
-          </div>
-
-          {/* Drag & Drop Zone */}
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-              dragOver 
-                ? 'border-primary bg-primary/5' 
-                : 'border-border hover:border-primary/50 bg-background'
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              Drag & Drop Images Here
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Or click to select files (PNG, JPG, JPEG)
-            </p>
-            <Button type="button" variant="outline">
-              Select Files
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
-          </div>
-
-          {/* Selected Files Preview */}
-          {selectedFiles.length > 0 && (
-            <div className="space-y-4">
-              <h4 className="font-medium text-foreground">Selected Files ({selectedFiles.length})</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {selectedFiles.map((file, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg"
-                    />
-                    <button
-                      onClick={() => removeSelectedFile(index)}
-                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                    <div className="absolute bottom-1 left-1 bg-black/70 text-white px-2 py-1 rounded text-xs">
-                      {file.name.split('.')[0].substring(0, 8)}...
-                    </div>
-                  </div>
-                ))}
+        <CardContent>
+          <form onSubmit={handleAddImage} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="imageFile">Upload Image File</Label>
+                <Input
+                  id="imageFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="cursor-pointer"
+                />
               </div>
-              <Button 
-                onClick={uploadImages} 
-                disabled={uploading || !uploadSettings.category}
-                className="w-full"
-              >
-                {uploading ? 'Uploading...' : `Upload ${selectedFiles.length} Image(s)`}
-                {!uploading && <Check className="h-4 w-4 ml-2" />}
-              </Button>
+              <div>
+                <Label htmlFor="imageUrl">Or Enter Image URL</Label>
+                <Input
+                  id="imageUrl"
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  value={newImage.src}
+                  onChange={(e) => setNewImage(prev => ({ ...prev, src: e.target.value }))}
+                />
+              </div>
             </div>
-          )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select 
+                  value={newImage.category} 
+                  onValueChange={(value) => setNewImage(prev => ({ ...prev, category: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bridal">Bridal</SelectItem>
+                    <SelectItem value="casual">Casual</SelectItem>
+                    <SelectItem value="natural">Natural</SelectItem>
+                    <SelectItem value="evening">Evening</SelectItem>
+                    <SelectItem value="training">Training</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="alt">Image Description *</Label>
+                <Input
+                  id="alt"
+                  type="text"
+                  placeholder="Describe the image..."
+                  value={newImage.alt}
+                  onChange={(e) => setNewImage(prev => ({ ...prev, alt: e.target.value }))}
+                  required
+                />
+              </div>
+            </div>
+
+            {newImage.src && (
+              <div>
+                <Label>Preview</Label>
+                <img 
+                  src={newImage.src} 
+                  alt="Preview" 
+                  className="w-32 h-32 object-cover rounded-lg border"
+                />
+              </div>
+            )}
+
+            <Button type="submit" className="w-full">
+              <Upload className="mr-2 h-4 w-4" />
+              Add Image
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
-      {/* Current Gallery */}
-      <Card className="bg-card border-border">
+      {/* Gallery Management */}
+      <Card>
         <CardHeader>
-          <CardTitle className="text-card-foreground">Current Gallery ({images.length} images)</CardTitle>
+          <CardTitle>Gallery Images ({images.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {images.map((image) => (
-              <div key={image.id} className="relative group">
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => deleteImage(image.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+          {images.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              No images in gallery yet. Add some images above!
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {images.map((image) => (
+                <div key={image.id} className="relative group">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteImage(image.id)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-sm font-medium">{image.alt}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{image.category}</p>
+                  </div>
                 </div>
-                <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-                  {image.category}
-                </div>
-              </div>
-            ))}
-          </div>
-          {images.length === 0 && (
-            <div className="text-center py-8">
-              <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground">No images in gallery. Upload some to get started!</p>
+              ))}
             </div>
           )}
         </CardContent>

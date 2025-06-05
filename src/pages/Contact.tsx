@@ -20,7 +20,7 @@ const Contact = () => {
 
   const handleWhatsAppClick = () => {
     const message = "Hello! I'm interested in your makeup services. Could you please provide more information?";
-    const whatsappUrl = `https://wa.me/2348000000000?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/2349055551251?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -77,7 +77,7 @@ const Contact = () => {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg">
+                  <Button type="submit" className="w-full luxury-button" size="lg">
                     Send Message
                   </Button>
                 </form>
@@ -100,7 +100,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="font-medium">WhatsApp</p>
-                      <p className="text-sm text-muted-foreground">+234 xxx xxx xxxx</p>
+                      <p className="text-sm text-muted-foreground">09055551251</p>
                     </div>
                   </div>
 
@@ -110,7 +110,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="font-medium">Phone</p>
-                      <p className="text-sm text-muted-foreground">+234 xxx xxx xxxx</p>
+                      <p className="text-sm text-muted-foreground">09055551251</p>
                     </div>
                   </div>
 
@@ -120,12 +120,12 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="font-medium">Location</p>
-                      <p className="text-sm text-muted-foreground">Kaduna, Nigeria</p>
+                      <p className="text-sm text-muted-foreground">Opposite SMC Central Mosque Unguwan Dosa, Kaduna</p>
                     </div>
                   </div>
                 </div>
 
-                <Button onClick={handleWhatsAppClick} className="w-full" size="lg">
+                <Button onClick={handleWhatsAppClick} className="w-full luxury-button" size="lg">
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Chat on WhatsApp
                 </Button>
@@ -143,15 +143,15 @@ const Contact = () => {
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span>Monday - Friday</span>
-                  <span className="text-muted-foreground">9:00 AM - 6:00 PM</span>
+                  <span className="text-muted-foreground">8:00 AM - 6:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Saturday</span>
-                  <span className="text-muted-foreground">8:00 AM - 8:00 PM</span>
+                  <span className="text-muted-foreground">8:00 AM - 6:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Sunday</span>
-                  <span className="text-muted-foreground">10:00 AM - 4:00 PM</span>
+                  <span className="text-muted-foreground">8:00 AM - 6:00 PM</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-4">
                   Weekend and evening appointments available for events
@@ -167,7 +167,9 @@ const Contact = () => {
               <CardContent>
                 <div className="flex space-x-4">
                   <a
-                    href="#"
+                    href="https://www.instagram.com/glow.and.go__/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors"
                   >
                     <Instagram className="h-5 w-5 text-primary" />
@@ -201,9 +203,9 @@ const Contact = () => {
                 <div className="text-center">
                   <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
                   <p className="text-lg font-medium">Studio Location</p>
-                  <p className="text-muted-foreground">Kaduna, Nigeria</p>
+                  <p className="text-muted-foreground">Opposite SMC Central Mosque Unguwan Dosa, Kaduna</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Exact address will be provided upon booking confirmation
+                    Call or WhatsApp for detailed directions
                   </p>
                 </div>
               </div>

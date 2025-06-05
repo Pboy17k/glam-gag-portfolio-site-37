@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Navigation = () => {
@@ -39,13 +39,15 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary/80 rounded-full"></div>
-            <span className="text-xl font-bold text-foreground">Glow and Go</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">G&G</span>
+            </div>
+            <span className="text-xl font-bold text-foreground font-playfair">Glow and Go</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -55,18 +57,26 @@ const Navigation = () => {
                 key={item.name}
                 to={item.href}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(item.href) ? 'text-primary' : 'text-foreground'
+                  isActive(item.href) ? 'text-primary font-semibold' : 'text-foreground'
                 }`}
               >
                 {item.name}
               </Link>
             ))}
             
+            <Link
+              to="/admin"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <Shield className="h-4 w-4" />
+              Admin
+            </Link>
+            
             <Button onClick={toggleTheme} variant="outline" size="sm">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
             
-            <Button asChild>
+            <Button asChild className="luxury-button">
               <Link to="/booking">Book Now</Link>
             </Button>
           </div>
@@ -94,15 +104,23 @@ const Navigation = () => {
                   key={item.name}
                   to={item.href}
                   className={`block px-3 py-2 text-base font-medium transition-colors hover:text-primary ${
-                    isActive(item.href) ? 'text-primary' : 'text-foreground'
+                    isActive(item.href) ? 'text-primary font-semibold' : 'text-foreground'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
+              <Link
+                to="/admin"
+                className="block px-3 py-2 text-base font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
               <div className="px-3 py-2">
-                <Button asChild className="w-full">
+                <Button asChild className="w-full luxury-button">
                   <Link to="/booking" onClick={() => setIsOpen(false)}>Book Now</Link>
                 </Button>
               </div>
