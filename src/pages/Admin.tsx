@@ -17,6 +17,7 @@ import GalleryPanel from '@/components/admin/GalleryPanel';
 import ServicesPanel from '@/components/admin/ServicesPanel';
 import SettingsPanel from '@/components/admin/SettingsPanel';
 import AdminsPanel from '@/components/admin/AdminsPanel';
+import AppImagesPanel from "@/components/admin/AppImagesPanel";
 
 interface GalleryItem {
   id: number;
@@ -157,12 +158,13 @@ const Admin = () => {
           </Button>
         </div>
         <Tabs defaultValue="bookings" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-card">
+          <TabsList className="grid w-full grid-cols-6 bg-card">
             <TabsTrigger value="bookings" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Bookings</TabsTrigger>
             <TabsTrigger value="gallery" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Gallery</TabsTrigger>
             <TabsTrigger value="services" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Services</TabsTrigger>
             <TabsTrigger value="settings" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Settings</TabsTrigger>
             <TabsTrigger value="admins" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Manage Admins</TabsTrigger>
+            <TabsTrigger value="app-images" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">App Images</TabsTrigger>
           </TabsList>
           {/* Enhanced Bookings Management */}
           <TabsContent value="bookings" className="space-y-6">
@@ -197,6 +199,9 @@ const Admin = () => {
               deleteAdminAccount={deleteAdminAccount}
               currentAdmin={currentAdmin}
             />
+          </TabsContent>
+          <TabsContent value="app-images" className="space-y-6">
+            <AppImagesPanel />
           </TabsContent>
         </Tabs>
       </div>

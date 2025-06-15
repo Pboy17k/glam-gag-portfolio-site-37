@@ -1,13 +1,21 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+
+const getHeroBgSrc = () => {
+  try {
+    const customImages = JSON.parse(localStorage.getItem("customImages") ?? "{}");
+    return customImages.homeHeroBg || "/lovable-uploads/cd837cf5-3f94-4026-977d-d24bc7fc2861.png";
+  } catch {
+    return "/lovable-uploads/cd837cf5-3f94-4026-977d-d24bc7fc2861.png";
+  }
+};
 
 const HeroSection = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
       <div className="absolute inset-0">
         <img
-          src="/lovable-uploads/cd837cf5-3f94-4026-977d-d24bc7fc2861.png"
+          src={getHeroBgSrc()}
           alt="Glow and Go - Professional makeup artistry"
           className="w-full h-full object-cover"
         />

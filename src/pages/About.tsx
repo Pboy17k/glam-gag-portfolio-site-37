@@ -1,6 +1,15 @@
-
 import { CheckCircle, Award, Users, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+
+const getAboutImageSrc = () => {
+  // Fetch from localStorage if available, otherwise default.
+  try {
+    const customImages = JSON.parse(localStorage.getItem("customImages") ?? "{}");
+    return customImages.aboutProfile || "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
+  } catch {
+    return "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
+  }
+};
 
 const About = () => {
   const features = [
@@ -50,10 +59,9 @@ const About = () => {
                 </p>
               </div>
             </div>
-
             <div className="relative">
               <img
-                src="/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png"
+                src={getAboutImageSrc()}
                 alt="GAG - Professional Makeup Artist"
                 className="rounded-2xl shadow-2xl animate-float object-cover w-full h-96"
               />
