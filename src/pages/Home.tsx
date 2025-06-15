@@ -1,22 +1,67 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, ArrowRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
+interface GalleryItem {
+  id: number;
+  src: string;
+  category: string;
+  alt: string;
+  type: 'image' | 'video';
+}
+
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
-  // Placeholder gallery images - in a real app, these would come from the admin/CMS
-  const galleryImages = [
-    'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
-    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-    'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
-    'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
-  ];
+  // Load gallery images from admin system
+  useEffect(() => {
+    const savedItems = localStorage.getItem('galleryItems');
+    if (savedItems) {
+      try {
+        const parsedItems: GalleryItem[] = JSON.parse(savedItems);
+        // Filter for images only and extract their src URLs
+        const imageUrls = parsedItems
+          .filter(item => item.type === 'image')
+          .map(item => item.src);
+        
+        if (imageUrls.length > 0) {
+          setGalleryImages(imageUrls);
+        } else {
+          // Fallback to placeholder images if no admin images available
+          setGalleryImages([
+            'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
+            'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+            'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+            'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
+            'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading gallery items:', error);
+        // Fallback to placeholder images on error
+        setGalleryImages([
+          'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
+          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+          'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+          'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
+          'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
+        ]);
+      }
+    } else {
+      // Set default placeholder images if no localStorage data
+      setGalleryImages([
+        'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
+        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+        'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+        'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
+        'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
+      ]);
+    }
+  }, []);
 
   const testimonials = [
     {
@@ -120,11 +165,17 @@ const Home = () => {
 
           <div className="relative max-w-5xl mx-auto reveal-on-scroll">
             <div className="relative h-96 md:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
-              <img
-                src={galleryImages[currentSlide]}
-                alt="Makeup transformation"
-                className="w-full h-full object-cover transition-all duration-700 ease-in-out"
-              />
+              {galleryImages.length > 0 && (
+                <img
+                  src={galleryImages[currentSlide]}
+                  alt="Makeup transformation"
+                  className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+                  onError={(e) => {
+                    console.error('Image load error for:', galleryImages[currentSlide]);
+                    // Remove broken image from array if needed
+                  }}
+                />
+              )}
               
               <button
                 onClick={prevSlide}
