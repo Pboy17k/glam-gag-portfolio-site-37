@@ -53,9 +53,9 @@ const About = () => {
 
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80"
+                src="/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png"
                 alt="GAG - Professional Makeup Artist"
-                className="rounded-2xl shadow-2xl animate-float"
+                className="rounded-2xl shadow-2xl animate-float object-cover w-full h-96"
               />
               <div className="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-lg">
                 <p className="text-2xl font-bold">5+</p>

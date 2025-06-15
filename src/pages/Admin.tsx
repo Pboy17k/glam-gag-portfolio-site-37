@@ -12,6 +12,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import BookingsPanel from '@/components/admin/BookingsPanel';
+import GalleryPanel from '@/components/admin/GalleryPanel';
+import ServicesPanel from '@/components/admin/ServicesPanel';
+import SettingsPanel from '@/components/admin/SettingsPanel';
+import AdminsPanel from '@/components/admin/AdminsPanel';
 
 interface GalleryItem {
   id: number;
@@ -161,57 +166,37 @@ const Admin = () => {
           </TabsList>
           {/* Enhanced Bookings Management */}
           <TabsContent value="bookings" className="space-y-6">
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-card-foreground">
-                  <Calendar className="h-5 w-5" />
-                  Booking Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminBookingStats bookingRequests={bookingRequests} />
-                <AdminBookingTable 
-                  bookingRequests={bookingRequests}
-                  onStatusUpdate={handleStatusUpdate}
-                />
-              </CardContent>
-            </Card>
+            <BookingsPanel 
+              bookingRequests={bookingRequests}
+              onStatusUpdate={handleStatusUpdate}
+            />
           </TabsContent>
           <TabsContent value="gallery" className="space-y-6">
-            <AdminGalleryUpload 
+            <GalleryPanel 
               images={galleryItems}
               onImagesUpdate={setGalleryItems}
             />
           </TabsContent>
           <TabsContent value="services" className="space-y-6">
-            <AdminServicesManager 
+            <ServicesPanel 
               services={services}
               onServicesUpdate={setServices}
             />
           </TabsContent>
           <TabsContent value="settings" className="space-y-6">
-            <AdminSettings 
+            <SettingsPanel 
               bookingAvailability={bookingAvailability}
               onBookingAvailabilityChange={setBookingAvailability}
             />
           </TabsContent>
           {/* --- Manage Admins Tab --- */}
           <TabsContent value="admins" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">Admin Accounts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <AdminManagement
-                    adminAccounts={adminAccounts}
-                    addAdminAccount={addAdminAccount}
-                    deleteAdminAccount={deleteAdminAccount}
-                    currentAdmin={currentAdmin}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <AdminsPanel
+              adminAccounts={adminAccounts}
+              addAdminAccount={addAdminAccount}
+              deleteAdminAccount={deleteAdminAccount}
+              currentAdmin={currentAdmin}
+            />
           </TabsContent>
         </Tabs>
       </div>
