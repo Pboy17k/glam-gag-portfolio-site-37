@@ -1,15 +1,7 @@
 import { CheckCircle, Award, Users, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-const getAboutImageSrc = () => {
-  // Fetch from localStorage if available, otherwise default.
-  try {
-    const customImages = JSON.parse(localStorage.getItem("customImages") ?? "{}");
-    return customImages.aboutProfile || "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
-  } catch {
-    return "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
-  }
-};
+const LOGO_SRC = "/lovable-uploads/7ff86ad9-8ffd-49de-ac39-780f6abf70e1.png";
 
 const About = () => {
   const features = [
@@ -59,11 +51,11 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative flex items-center justify-center">
               <img
-                src={getAboutImageSrc()}
-                alt="GAG - Professional Makeup Artist"
-                className="rounded-2xl shadow-2xl animate-float object-cover w-full h-96"
+                src={LOGO_SRC}
+                alt="Glow and Go Logo"
+                className="rounded-2xl shadow-2xl animate-float object-cover w-56 h-56 bg-white border-4 border-primary/20"
               />
               <div className="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-lg">
                 <p className="text-2xl font-bold">5+</p>
