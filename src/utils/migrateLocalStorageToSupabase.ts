@@ -9,11 +9,10 @@ export async function migrateLocalStorageToSupabase() {
       const bookings = JSON.parse(bookingsRaw);
       if (Array.isArray(bookings) && bookings.length) {
         for (const booking of bookings) {
-          // Check if booking already exists in supabase, upsert by data.id (if present)
-          const id = booking.id ?? undefined;
+          // Insert booking, omit id as it is auto-generated
           const { data, error } = await supabase
             .from("bookings")
-            .upsert({ id, data: booking }, { ignoreDuplicates: true });
+            .upsert({ data: booking }, { ignoreDuplicates: true });
           if (error) console.warn("Booking migration error:", error);
         }
       }
