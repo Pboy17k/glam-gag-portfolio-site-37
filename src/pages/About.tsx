@@ -60,15 +60,17 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="relative flex items-center justify-center">
-              <img
-                src={getAboutImageSrc()}
-                alt="GAG - Professional Makeup Artist"
-                className="rounded-2xl shadow-2xl animate-float object-cover w-72 h-72 bg-white border-4 border-primary/20"
-              />
-              <div className="absolute -bottom-4 -right-4 bg-primary text-white p-3 rounded-2xl shadow-lg">
-                <p className="text-lg font-bold leading-none">5+</p>
-                <p className="text-xs leading-tight">Years Experience</p>
+            <div className="flex items-center justify-center">
+              <div className="relative w-72 h-72">
+                <img
+                  src={getAboutImageSrc()}
+                  alt="GAG - Professional Makeup Artist"
+                  className="rounded-2xl shadow-2xl animate-float object-cover w-72 h-72 bg-white border-4 border-primary/20"
+                />
+                <div className="absolute bottom-2 right-2 bg-primary text-white px-4 py-2 rounded-2xl shadow-lg z-10 flex flex-col items-center">
+                  <p className="text-lg font-bold leading-none">5+</p>
+                  <p className="text-xs leading-tight">Years Experience</p>
+                </div>
               </div>
             </div>
           </div>
