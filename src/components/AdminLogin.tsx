@@ -7,10 +7,26 @@ import { Label } from '@/components/ui/label';
 import { Lock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+const ADMIN_ACCOUNTS_KEY = "admin_accounts";
+const ADMIN_SESSION_KEY = "admin_session";
+
+// Helper: get admins from localStorage or create default
+function getAdminAccounts() {
+  let list = [];
+  try {
+    const ls = localStorage.getItem(ADMIN_ACCOUNTS_KEY);
+    if (ls) list = JSON.parse(ls) || [];
+  } catch {}
+  if (Array.isArray(list) && list.length > 0) return list;
+  // Ensure ONE default admin if empty
+  const defaultAdmin = { username: "admin", password: "glamadmin2024" };
+  localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify([defaultAdmin]));
+  return [defaultAdmin];
+}
+
 interface AdminLoginProps {
   onLogin: () => void;
 }
-
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -20,12 +36,17 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple admin credentials check (in production, use proper authentication)
-    if (credentials.username === 'admin' && credentials.password === 'glamadmin2024') {
+    const admins = getAdminAccounts();
+    const match = admins.find(
+      (acc) => acc.username === credentials.username && acc.password === credentials.password
+    );
+
+    if (match) {
+      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ username: match.username }));
       onLogin();
       toast({
         title: "Login Successful",
-        description: "Welcome to the admin dashboard!",
+        description: `Welcome, ${match.username}!`,
       });
     } else {
       toast({
@@ -34,7 +55,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         variant: "destructive",
       });
     }
-
     setLoading(false);
   };
 
@@ -83,7 +103,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
           </form>
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground">
-              Demo credentials: admin / glamadmin2024
+              Default: admin / glamadmin2024
             </p>
           </div>
         </CardContent>
