@@ -11,6 +11,9 @@ import { useToast } from '@/hooks/use-toast';
 
 const LOCAL_STORAGE_KEY = "bookings";
 
+const BOOKING_PHONE_NUMBER = "09055551251"; // centralize phone number
+const BOOKING_PHONE_NUMBER_INT = "2349055551251"; // WhatsApp format - remove first 0 and add country code
+
 const Booking = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -71,7 +74,7 @@ const Booking = () => {
       createdAt,
     };
 
-    // Save booking locally
+    // Save booking locally (admin sees the notification in admin dashboard)
     try {
       const prevBookingsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
       const prevBookings = prevBookingsJSON
@@ -82,7 +85,6 @@ const Booking = () => {
         JSON.stringify([newBooking, ...prevBookings])
       );
     } catch (err) {
-      // Optionally add toast here
       console.error("Could not save booking to local storage", err);
     }
 
@@ -101,7 +103,8 @@ Notes: ${formData.notes}
 
 Please confirm availability and next steps.`;
 
-    const whatsappUrl = `https://wa.me/2348000000000?text=${encodeURIComponent(message)}`;
+    // Updated WhatsApp URL with new number
+    const whatsappUrl = `https://wa.me/${BOOKING_PHONE_NUMBER_INT}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 
     toast({
@@ -279,14 +282,14 @@ Please confirm availability and next steps.`;
                   <MessageSquare className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="font-medium">WhatsApp</p>
-                    <p className="text-sm text-muted-foreground">+234 xxx xxx xxxx</p>
+                    <p className="text-sm text-muted-foreground">{BOOKING_PHONE_NUMBER}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="font-medium">Phone</p>
-                    <p className="text-sm text-muted-foreground">+234 xxx xxx xxxx</p>
+                    <p className="text-sm text-muted-foreground">{BOOKING_PHONE_NUMBER}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
