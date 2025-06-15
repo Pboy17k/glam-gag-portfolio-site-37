@@ -47,12 +47,10 @@ const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!getSession());
   const [currentAdmin, setCurrentAdmin] = useState(getSession()?.username ?? null);
   const [adminAccounts, setAdminAccounts] = useState<{username: string; password: string;}[]>([]);
-  // Make state for bookings loaded from localStorage:
-  const [bookingRequests, setBookingRequests] = useState<any[]>([]); // Type is fine for mock/demo, see below
+  const [bookingRequests, setBookingRequests] = useState<any[]>([]);
   const [bookingAvailability, setBookingAvailability] = useState(true);
   const { toast } = useToast();
 
-  // Mock data - in a real app, this would come from a database
   const [services, setServices] = useState([
     { id: 1, name: 'Studio Bridal Glam', price: 100000, category: 'bridal' },
     { id: 2, name: 'Home Service Bridal', price: 130000, category: 'bridal' },
@@ -92,24 +90,12 @@ const Admin = () => {
     }
   }, []);
 
-  // Unified updater to always persist to localStorage and state
-  const handleBookingRequestsUpdate = (updated: any[]) => {
-    setBookingRequests(updated);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-  };
-
-  // Unified updater for admin accounts
-  const handleAdminsUpdate = (newList: {username: string; password: string;}[]) => {
-    setAdminAccounts(newList);
-    localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify(newList));
-  };
-
   // Add new admin account (username must be unique)
   const addAdminAccount = (username: string, password: string) => {
     if (!username.trim() || !password.trim()) return;
     if (adminAccounts.find(a => a.username === username)) return;
     const updated = [...adminAccounts, { username, password }];
-    handleAdminsUpdate(updated);
+    handleAdminsUpdateSupabase(updated);
   };
 
   // Delete admin account (cannot delete last admin or yourself)
@@ -117,15 +103,15 @@ const Admin = () => {
     if (adminAccounts.length <= 1) return;
     if (username === currentAdmin) return;
     const updated = adminAccounts.filter(a => a.username !== username);
-    handleAdminsUpdate(updated);
+    handleAdminsUpdateSupabase(updated);
   };
 
-  // Update booking status and persist
+  // Update booking status and persist to Supabase
   const handleStatusUpdate = (bookingId: number, newStatus: string) => {
     const updated = bookingRequests.map((booking) =>
       booking.id === bookingId ? { ...booking, status: newStatus } : booking
     );
-    handleBookingRequestsUpdate(updated);
+    handleBookingRequestsUpdateSupabase(updated);
     toast({
       title: "Booking Updated",
       description: `Booking status changed to ${newStatus}`,
@@ -163,9 +149,12 @@ const Admin = () => {
         .from("bookings")
         .select("data, id")
         .order("id", { ascending: true });
-      setBookingRequests(bookingsData?.map((d: any) => ({
-        ...d.data, id: d.id
-      })) ?? []);
+      setBookingRequests(
+        bookingsData?.map((d: any) => ({
+          ...d.data,
+          id: d.id
+        })) ?? []
+      );
 
       // --- Load admin accounts from Supabase ---
       const { data: admins } = await supabase
@@ -178,22 +167,30 @@ const Admin = () => {
         .from("gallery_items")
         .select("*")
         .order("id", { ascending: true });
-      setGalleryItems(gallery ?? []);
+      // Fix: enforce type!
+      setGalleryItems(
+        (gallery ?? []).map((g: any) => ({
+          ...g,
+          type: g.type === "image" ? "image" : "video",
+        }))
+      );
     }
     migrateAndLoadAll();
   }, [isLoggedIn]);
 
-  // Unified updater to keep supabase in sync
-  const handleBookingRequestsUpdate = async (updated: any[]) => {
+  // Unified updater to keep Supabase in sync for bookings
+  const handleBookingRequestsUpdateSupabase = async (updated: any[]) => {
     setBookingRequests(updated);
     // Overwrite all bookings in supabase
     await supabase.from("bookings").delete().neq("id", 0); // delete all
     for (const booking of updated) {
-      await supabase.from("bookings").upsert({ id: booking.id, data: booking });
+      // Upsert without specifying id (Supabase type restrictions)
+      await supabase.from("bookings").insert({ data: booking });
     }
   };
 
-  const handleAdminsUpdate = async (newList: {username: string; password: string;}[]) => {
+  // Unified updater to keep Supabase in sync for admins
+  const handleAdminsUpdateSupabase = async (newList: {username: string; password: string;}[]) => {
     setAdminAccounts(newList);
     await supabase.from("admin_accounts").delete().neq("username", ""); // delete all
     for (const admin of newList) {
@@ -209,7 +206,14 @@ const Admin = () => {
     setGalleryItems(newGalleryList);
     await supabase.from("gallery_items").delete().neq("id", 0);
     for (const item of newGalleryList) {
-      await supabase.from("gallery_items").upsert(item);
+      // Supabase schema: id, src, category, alt, type
+      await supabase.from("gallery_items").upsert({
+        id: item.id,
+        src: item.src,
+        category: item.category,
+        alt: item.alt,
+        type: item.type,
+      });
     }
   };
 
@@ -269,8 +273,8 @@ const Admin = () => {
           <TabsContent value="admins" className="space-y-6">
             <AdminsPanel
               adminAccounts={adminAccounts}
-              addAdminAccount={(username, password) => handleAdminsUpdate([...adminAccounts, {username, password}])}
-              deleteAdminAccount={(username) => handleAdminsUpdate(adminAccounts.filter(a => a.username !== username))}
+              addAdminAccount={addAdminAccount}
+              deleteAdminAccount={deleteAdminAccount}
               currentAdmin={currentAdmin}
             />
           </TabsContent>
