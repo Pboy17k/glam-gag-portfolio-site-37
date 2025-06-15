@@ -9,7 +9,87 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      admin_accounts: {
+        Row: {
+          created_at: string | null
+          password: string
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          password: string
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          password?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          created_at: string | null
+          data: Json
+          id: number
+        }
+        Insert: {
+          created_at?: string | null
+          data: Json
+          id?: never
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          id?: never
+        }
+        Relationships: []
+      }
+      custom_images: {
+        Row: {
+          created_at: string | null
+          key: string
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          key: string
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      gallery_items: {
+        Row: {
+          alt: string
+          category: string
+          created_at: string | null
+          id: number
+          src: string
+          type: string
+        }
+        Insert: {
+          alt: string
+          category: string
+          created_at?: string | null
+          id: number
+          src: string
+          type: string
+        }
+        Update: {
+          alt?: string
+          category?: string
+          created_at?: string | null
+          id?: number
+          src?: string
+          type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

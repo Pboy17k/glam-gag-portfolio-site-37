@@ -19,6 +19,13 @@ import SettingsPanel from '@/components/admin/SettingsPanel';
 import AdminsPanel from '@/components/admin/AdminsPanel';
 import AppImagesPanel from "@/components/admin/AppImagesPanel";
 
+import { migrateLocalStorageToSupabase } from "@/utils/migrateLocalStorageToSupabase";
+import { supabase } from "@/integrations/supabase/client";
+
+const LOCAL_STORAGE_KEY = "bookings";
+const ADMIN_ACCOUNTS_KEY = "admin_accounts";
+const ADMIN_SESSION_KEY = "admin_session";
+
 interface GalleryItem {
   id: number;
   src: string;
@@ -26,10 +33,6 @@ interface GalleryItem {
   alt: string;
   type: 'image' | 'video';
 }
-
-const LOCAL_STORAGE_KEY = "bookings";
-const ADMIN_ACCOUNTS_KEY = "admin_accounts";
-const ADMIN_SESSION_KEY = "admin_session";
 
 const Admin = () => {
   // Check admin session from localStorage
@@ -139,6 +142,77 @@ const Admin = () => {
     });
   };
 
+  // --- MIGRATION & SUPABASE LOADER ---
+  useEffect(() => {
+    // 1. Run migration ONCE (remove items from localStorage after!)
+    async function migrateAndLoadAll() {
+      const migratedKey = "hasSupabaseMigrated";
+      const alreadyMigrated = localStorage.getItem(migratedKey);
+      if (!alreadyMigrated) {
+        await migrateLocalStorageToSupabase();
+        localStorage.setItem(migratedKey, "true");
+        // Optionally, clear
+        // localStorage.removeItem("bookings");
+        // localStorage.removeItem("galleryItems");
+        // localStorage.removeItem("admin_accounts");
+        // localStorage.removeItem("customImages");
+      }
+
+      // --- Load bookings from Supabase ---
+      const { data: bookingsData } = await supabase
+        .from("bookings")
+        .select("data, id")
+        .order("id", { ascending: true });
+      setBookingRequests(bookingsData?.map((d: any) => ({
+        ...d.data, id: d.id
+      })) ?? []);
+
+      // --- Load admin accounts from Supabase ---
+      const { data: admins } = await supabase
+        .from("admin_accounts")
+        .select("*");
+      setAdminAccounts(admins ?? []);
+
+      // --- Load galleryItems from Supabase ---
+      const { data: gallery } = await supabase
+        .from("gallery_items")
+        .select("*")
+        .order("id", { ascending: true });
+      setGalleryItems(gallery ?? []);
+    }
+    migrateAndLoadAll();
+  }, [isLoggedIn]);
+
+  // Unified updater to keep supabase in sync
+  const handleBookingRequestsUpdate = async (updated: any[]) => {
+    setBookingRequests(updated);
+    // Overwrite all bookings in supabase
+    await supabase.from("bookings").delete().neq("id", 0); // delete all
+    for (const booking of updated) {
+      await supabase.from("bookings").upsert({ id: booking.id, data: booking });
+    }
+  };
+
+  const handleAdminsUpdate = async (newList: {username: string; password: string;}[]) => {
+    setAdminAccounts(newList);
+    await supabase.from("admin_accounts").delete().neq("username", ""); // delete all
+    for (const admin of newList) {
+      await supabase.from("admin_accounts").upsert({
+        username: admin.username,
+        password: admin.password
+      });
+    }
+  };
+
+  // Gallery updates
+  const handleGalleryItemsUpdate = async (newGalleryList: GalleryItem[]) => {
+    setGalleryItems(newGalleryList);
+    await supabase.from("gallery_items").delete().neq("id", 0);
+    for (const item of newGalleryList) {
+      await supabase.from("gallery_items").upsert(item);
+    }
+  };
+
   if (!isLoggedIn) {
     return <AdminLogin onLogin={() => { setIsLoggedIn(true); setCurrentAdmin(getSession()?.username ?? null); }} />;
   }
@@ -176,7 +250,7 @@ const Admin = () => {
           <TabsContent value="gallery" className="space-y-6">
             <GalleryPanel 
               images={galleryItems}
-              onImagesUpdate={setGalleryItems}
+              onImagesUpdate={handleGalleryItemsUpdate}
             />
           </TabsContent>
           <TabsContent value="services" className="space-y-6">
@@ -195,8 +269,8 @@ const Admin = () => {
           <TabsContent value="admins" className="space-y-6">
             <AdminsPanel
               adminAccounts={adminAccounts}
-              addAdminAccount={addAdminAccount}
-              deleteAdminAccount={deleteAdminAccount}
+              addAdminAccount={(username, password) => handleAdminsUpdate([...adminAccounts, {username, password}])}
+              deleteAdminAccount={(username) => handleAdminsUpdate(adminAccounts.filter(a => a.username !== username))}
               currentAdmin={currentAdmin}
             />
           </TabsContent>
