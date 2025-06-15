@@ -5,47 +5,48 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Upload, Plus } from 'lucide-react';
+import { Trash2, Upload, Plus, Video, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface GalleryImage {
+interface GalleryItem {
   id: number;
   src: string;
   category: string;
   alt: string;
+  type: 'image' | 'video';
 }
 
 interface AdminGalleryUploadProps {
-  images: GalleryImage[];
-  onImagesUpdate: (images: GalleryImage[]) => void;
+  images: GalleryItem[];
+  onImagesUpdate: (images: GalleryItem[]) => void;
 }
 
 const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps) => {
-  const [newImage, setNewImage] = useState({ src: '', category: 'bridal', alt: '' });
+  const [newItem, setNewItem] = useState({ src: '', category: 'bridal', alt: '', type: 'image' as 'image' | 'video' });
   const { toast } = useToast();
 
-  // Load images from localStorage on component mount
+  // Load items from localStorage on component mount
   useEffect(() => {
-    const savedImages = localStorage.getItem('galleryImages');
-    if (savedImages) {
+    const savedItems = localStorage.getItem('galleryItems');
+    if (savedItems) {
       try {
-        const parsedImages = JSON.parse(savedImages);
-        onImagesUpdate(parsedImages);
+        const parsedItems = JSON.parse(savedItems);
+        onImagesUpdate(parsedItems);
       } catch (error) {
-        console.error('Error loading images from localStorage:', error);
+        console.error('Error loading items from localStorage:', error);
       }
     }
   }, [onImagesUpdate]);
 
-  // Save images to localStorage whenever images change
+  // Save items to localStorage whenever items change
   useEffect(() => {
-    localStorage.setItem('galleryImages', JSON.stringify(images));
+    localStorage.setItem('galleryItems', JSON.stringify(images));
   }, [images]);
 
-  const handleAddImage = (e: React.FormEvent) => {
+  const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newImage.src || !newImage.alt) {
+    if (!newItem.src || !newItem.alt) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -54,78 +55,113 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
       return;
     }
 
-    const newImageData: GalleryImage = {
+    const newItemData: GalleryItem = {
       id: Date.now(),
-      src: newImage.src,
-      category: newImage.category,
-      alt: newImage.alt
+      src: newItem.src,
+      category: newItem.category,
+      alt: newItem.alt,
+      type: newItem.type
     };
 
-    const updatedImages = [...images, newImageData];
-    onImagesUpdate(updatedImages);
+    const updatedItems = [...images, newItemData];
+    onImagesUpdate(updatedItems);
     
-    setNewImage({ src: '', category: 'bridal', alt: '' });
+    setNewItem({ src: '', category: 'bridal', alt: '', type: 'image' });
     
     toast({
       title: "Success",
-      description: "Image added to gallery successfully!",
+      description: `${newItem.type === 'video' ? 'Video' : 'Image'} added to gallery successfully!`,
     });
   };
 
-  const handleDeleteImage = (imageId: number) => {
-    const updatedImages = images.filter(img => img.id !== imageId);
-    onImagesUpdate(updatedImages);
+  const handleDeleteItem = (itemId: number) => {
+    const updatedItems = images.filter(item => item.id !== itemId);
+    onImagesUpdate(updatedItems);
     
     toast({
       title: "Deleted",
-      description: "Image removed from gallery",
+      description: "Item removed from gallery",
     });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const isVideo = file.type.startsWith('video/');
+      const isImage = file.type.startsWith('image/');
+      
+      if (!isVideo && !isImage) {
+        toast({
+          title: "Error",
+          description: "Please select an image or video file",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
         const result = event.target?.result as string;
-        setNewImage(prev => ({ ...prev, src: result }));
+        setNewItem(prev => ({ 
+          ...prev, 
+          src: result, 
+          type: isVideo ? 'video' : 'image' 
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const imageItems = images.filter(item => item.type === 'image');
+  const videoItems = images.filter(item => item.type === 'video');
+
   return (
     <div className="space-y-6">
-      {/* Add New Image Form */}
+      {/* Add New Item Form */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Plus className="h-5 w-5" />
-            Add New Image
+            Add New Media
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAddImage} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleAddItem} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="imageFile">Upload Image File</Label>
+                <Label htmlFor="mediaFile">Upload Media File</Label>
                 <Input
-                  id="imageFile"
+                  id="mediaFile"
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={handleFileUpload}
                   className="cursor-pointer"
                 />
               </div>
               <div>
-                <Label htmlFor="imageUrl">Or Enter Image URL</Label>
+                <Label htmlFor="mediaUrl">Or Enter Media URL</Label>
                 <Input
-                  id="imageUrl"
+                  id="mediaUrl"
                   type="url"
-                  placeholder="https://example.com/image.jpg"
-                  value={newImage.src}
-                  onChange={(e) => setNewImage(prev => ({ ...prev, src: e.target.value }))}
+                  placeholder="https://example.com/media.jpg"
+                  value={newItem.src}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, src: e.target.value }))}
                 />
+              </div>
+              <div>
+                <Label htmlFor="mediaType">Media Type</Label>
+                <Select 
+                  value={newItem.type} 
+                  onValueChange={(value: 'image' | 'video') => setNewItem(prev => ({ ...prev, type: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select media type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="image">Image</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -133,8 +169,8 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
               <div>
                 <Label htmlFor="category">Category</Label>
                 <Select 
-                  value={newImage.category} 
-                  onValueChange={(value) => setNewImage(prev => ({ ...prev, category: value }))}
+                  value={newItem.category} 
+                  onValueChange={(value) => setNewItem(prev => ({ ...prev, category: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
@@ -149,32 +185,40 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                 </Select>
               </div>
               <div>
-                <Label htmlFor="alt">Image Description *</Label>
+                <Label htmlFor="alt">Description *</Label>
                 <Input
                   id="alt"
                   type="text"
-                  placeholder="Describe the image..."
-                  value={newImage.alt}
-                  onChange={(e) => setNewImage(prev => ({ ...prev, alt: e.target.value }))}
+                  placeholder="Describe the content..."
+                  value={newItem.alt}
+                  onChange={(e) => setNewItem(prev => ({ ...prev, alt: e.target.value }))}
                   required
                 />
               </div>
             </div>
 
-            {newImage.src && (
+            {newItem.src && (
               <div>
                 <Label>Preview</Label>
-                <img 
-                  src={newImage.src} 
-                  alt="Preview" 
-                  className="w-32 h-32 object-cover rounded-lg border"
-                />
+                {newItem.type === 'video' ? (
+                  <video 
+                    src={newItem.src} 
+                    className="w-32 h-32 object-cover rounded-lg border"
+                    controls
+                  />
+                ) : (
+                  <img 
+                    src={newItem.src} 
+                    alt="Preview" 
+                    className="w-32 h-32 object-cover rounded-lg border"
+                  />
+                )}
               </div>
             )}
 
             <Button type="submit" className="w-full">
               <Upload className="mr-2 h-4 w-4" />
-              Add Image
+              Add {newItem.type === 'video' ? 'Video' : 'Image'}
             </Button>
           </form>
         </CardContent>
@@ -183,35 +227,54 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
       {/* Gallery Management */}
       <Card>
         <CardHeader>
-          <CardTitle>Gallery Images ({images.length})</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            Gallery Content ({images.length} items)
+            <span className="text-sm text-muted-foreground">
+              - {imageItems.length} images, {videoItems.length} videos
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {images.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              No images in gallery yet. Add some images above!
+              No content in gallery yet. Add some images or videos above!
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {images.map((image) => (
-                <div key={image.id} className="relative group">
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
+              {images.map((item) => (
+                <div key={item.id} className="relative group">
+                  {item.type === 'video' ? (
+                    <video
+                      src={item.src}
+                      className="w-full h-48 object-cover rounded-lg"
+                      controls
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={item.alt}
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                  )}
+                  <div className="absolute top-2 left-2">
+                    <div className="bg-black/70 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                      {item.type === 'video' ? <Video className="h-3 w-3" /> : <Image className="h-3 w-3" />}
+                      {item.type}
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleDeleteImage(image.id)}
+                      onClick={() => handleDeleteItem(item.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
                     </Button>
                   </div>
                   <div className="mt-2">
-                    <p className="text-sm font-medium">{image.alt}</p>
-                    <p className="text-xs text-muted-foreground capitalize">{image.category}</p>
+                    <p className="text-sm font-medium">{item.alt}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{item.category}</p>
                   </div>
                 </div>
               ))}

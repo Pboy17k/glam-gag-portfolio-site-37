@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import AdminLogin from '@/components/AdminLogin';
 import AdminGalleryUpload from '@/components/AdminGalleryUpload';
@@ -11,6 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+
+interface GalleryItem {
+  id: number;
+  src: string;
+  category: string;
+  alt: string;
+  type: 'image' | 'video';
+}
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -68,10 +75,10 @@ const Admin = () => {
     { id: 4, name: 'Home Service Casual Glam', price: 40000, category: 'casual' }
   ]);
 
-  const [galleryImages, setGalleryImages] = useState([
-    { id: 1, src: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80', category: 'bridal', alt: 'Bridal makeup' },
-    { id: 2, src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80', category: 'casual', alt: 'Casual glam' },
-    { id: 3, src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80', category: 'natural', alt: 'Natural look' }
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([
+    { id: 1, src: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80', category: 'bridal', alt: 'Bridal makeup', type: 'image' },
+    { id: 2, src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80', category: 'casual', alt: 'Casual glam', type: 'image' },
+    { id: 3, src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80', category: 'natural', alt: 'Natural look', type: 'image' }
   ]);
 
   const handleStatusUpdate = (bookingId: number, newStatus: string) => {
@@ -143,8 +150,8 @@ const Admin = () => {
           {/* Enhanced Gallery Management */}
           <TabsContent value="gallery" className="space-y-6">
             <AdminGalleryUpload 
-              images={galleryImages}
-              onImagesUpdate={setGalleryImages}
+              images={galleryItems}
+              onImagesUpdate={setGalleryItems}
             />
           </TabsContent>
 
