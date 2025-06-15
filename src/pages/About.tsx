@@ -64,11 +64,11 @@ const About = () => {
               <img
                 src={getAboutImageSrc()}
                 alt="GAG - Professional Makeup Artist"
-                className="rounded-2xl shadow-2xl animate-float object-cover w-56 h-56 bg-white border-4 border-primary/20"
+                className="rounded-2xl shadow-2xl animate-float object-cover w-72 h-72 bg-white border-4 border-primary/20"
               />
-              <div className="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-lg">
-                <p className="text-2xl font-bold">5+</p>
-                <p className="text-sm">Years Experience</p>
+              <div className="absolute -bottom-4 -right-4 bg-primary text-white p-3 rounded-2xl shadow-lg">
+                <p className="text-lg font-bold leading-none">5+</p>
+                <p className="text-xs leading-tight">Years Experience</p>
               </div>
             </div>
           </div>
