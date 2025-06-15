@@ -44,8 +44,12 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">G&G</span>
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/20 shadow-md">
+              <img 
+                src="/lovable-uploads/7ff86ad9-8ffd-49de-ac39-780f6abf70e1.png" 
+                alt="Glow and Go Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="text-xl font-bold text-foreground font-playfair">Glow and Go</span>
           </Link>
