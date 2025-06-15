@@ -2,6 +2,8 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Phone } from 'lucide-react';
 
+const LOGO_SRC = "/lovable-uploads/7ff86ad9-8ffd-49de-ac39-780f6abf70e1.png";
+
 const Footer = () => {
   return (
     <footer className="bg-card border-t border-border">
@@ -10,7 +12,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-blush-500 to-wine-600 rounded-full"></div>
+              <img
+                src={LOGO_SRC}
+                alt="Glow and Go Logo"
+                className="w-8 h-8 rounded-full bg-white border border-primary/20 object-cover"
+              />
               <span className="text-xl font-bold gradient-text">Glam by GAG</span>
             </div>
             <p className="text-muted-foreground mb-4">
