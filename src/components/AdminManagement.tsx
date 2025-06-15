@@ -73,7 +73,7 @@ const AdminManagement = ({
                         size="sm"
                         onClick={() => {
                           deleteAdminAccount(acc.username);
-                          toast({ title: "Admin removed", description: `Admin "${acc.username}" deleted.` });
+                          toast({ title: "Admin removed", description: `Admin \"${acc.username}\" deleted.` });
                         }}
                       >
                         Delete

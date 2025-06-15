@@ -177,31 +177,24 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* Enhanced Gallery Management */}
           <TabsContent value="gallery" className="space-y-6">
             <AdminGalleryUpload 
               images={galleryItems}
               onImagesUpdate={setGalleryItems}
             />
           </TabsContent>
-
-          {/* Services Management */}
           <TabsContent value="services" className="space-y-6">
             <AdminServicesManager 
               services={services}
               onServicesUpdate={setServices}
             />
           </TabsContent>
-
-          {/* Settings */}
           <TabsContent value="settings" className="space-y-6">
             <AdminSettings 
               bookingAvailability={bookingAvailability}
               onBookingAvailabilityChange={setBookingAvailability}
             />
           </TabsContent>
-
           {/* --- Manage Admins Tab --- */}
           <TabsContent value="admins" className="space-y-6">
             <Card>
