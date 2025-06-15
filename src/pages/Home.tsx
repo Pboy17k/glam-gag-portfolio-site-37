@@ -109,8 +109,8 @@ const Home = () => {
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=1920&q=80"
-            alt="Professional makeup artistry"
+            src="/lovable-uploads/cd837cf5-3f94-4026-977d-d24bc7fc2861.png"
+            alt="Glow and Go - Professional makeup artistry"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 hero-gradient"></div>
