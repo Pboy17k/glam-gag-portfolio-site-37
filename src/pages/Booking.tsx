@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Calendar, MapPin, Clock, User, Phone, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+
+const LOCAL_STORAGE_KEY = "bookings";
 
 const Booking = () => {
   const [formData, setFormData] = useState({
@@ -43,7 +44,48 @@ const Booking = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Generate a unique id and current date
+    const id = Date.now();
+    const createdAt = new Date().toISOString().slice(0, 10);
+
+    // Create new booking object formatted for admin
+    const newBooking = {
+      id,
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      service: getServiceLabel(formData.serviceType),
+      date: formData.eventDate,
+      time: "", // Not captured on form, left blank
+      location: formData.location,
+      notes:
+        [
+          formData.notes,
+          formData.requestGele ? "Gele tying requested" : null,
+          formData.requireTouchup ? "Touchup support required" : null,
+        ]
+          .filter(Boolean)
+          .join("; "),
+      status: "pending",
+      createdAt,
+    };
+
+    // Save booking locally
+    try {
+      const prevBookingsJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const prevBookings = prevBookingsJSON
+        ? JSON.parse(prevBookingsJSON)
+        : [];
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify([newBooking, ...prevBookings])
+      );
+    } catch (err) {
+      // Optionally add toast here
+      console.error("Could not save booking to local storage", err);
+    }
+
     // Create WhatsApp message
     const message = `Hello! I'd like to book a makeup session:
 
@@ -51,7 +93,7 @@ Name: ${formData.name}
 Phone: ${formData.phone}
 Email: ${formData.email}
 Event Date: ${formData.eventDate}
-Service: ${formData.serviceType}
+Service: ${getServiceLabel(formData.serviceType)}
 Location: ${formData.location}
 ${formData.requestGele ? 'Additional: Gele tying requested' : ''}
 ${formData.requireTouchup ? 'Additional: Touchup support required' : ''}
@@ -67,6 +109,12 @@ Please confirm availability and next steps.`;
       description: "Your booking request has been sent via WhatsApp. We'll get back to you soon!",
     });
   };
+
+  // Helper to get full service label from value for displaying in admin
+  function getServiceLabel(val: string) {
+    const found = serviceTypes.find((s) => s.value === val);
+    return found ? found.label : val;
+  }
 
   return (
     <div className="min-h-screen py-20">
