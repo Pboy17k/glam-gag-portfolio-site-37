@@ -23,6 +23,7 @@ interface AdminGalleryUploadProps {
 
 const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps) => {
   const [newItem, setNewItem] = useState({ src: '', category: 'bridal', alt: '', type: 'image' as 'image' | 'video' });
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   // Load items from localStorage on component mount
@@ -55,60 +56,129 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
       return;
     }
 
-    const newItemData: GalleryItem = {
-      id: Date.now(),
-      src: newItem.src,
-      category: newItem.category,
-      alt: newItem.alt,
-      type: newItem.type
-    };
+    try {
+      const newItemData: GalleryItem = {
+        id: Date.now(),
+        src: newItem.src,
+        category: newItem.category,
+        alt: newItem.alt,
+        type: newItem.type
+      };
 
-    const updatedItems = [...images, newItemData];
-    onImagesUpdate(updatedItems);
-    
-    setNewItem({ src: '', category: 'bridal', alt: '', type: 'image' });
-    
-    toast({
-      title: "Success",
-      description: `${newItem.type === 'video' ? 'Video' : 'Image'} added to gallery successfully!`,
-    });
+      const updatedItems = [...images, newItemData];
+      onImagesUpdate(updatedItems);
+      
+      setNewItem({ src: '', category: 'bridal', alt: '', type: 'image' });
+      
+      toast({
+        title: "Success",
+        description: `${newItem.type === 'video' ? 'Video' : 'Image'} added to gallery successfully!`,
+      });
+    } catch (error) {
+      console.error('Error adding item:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to gallery",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDeleteItem = (itemId: number) => {
-    const updatedItems = images.filter(item => item.id !== itemId);
-    onImagesUpdate(updatedItems);
-    
-    toast({
-      title: "Deleted",
-      description: "Item removed from gallery",
-    });
+    try {
+      const updatedItems = images.filter(item => item.id !== itemId);
+      onImagesUpdate(updatedItems);
+      
+      toast({
+        title: "Deleted",
+        description: "Item removed from gallery",
+      });
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete item",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const isVideo = file.type.startsWith('video/');
-      const isImage = file.type.startsWith('image/');
+    if (!file) return;
+
+    console.log('File selected:', file.name, file.type, file.size);
+
+    const isVideo = file.type.startsWith('video/');
+    const isImage = file.type.startsWith('image/');
+    
+    if (!isVideo && !isImage) {
+      toast({
+        title: "Error",
+        description: "Please select an image or video file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check file size (50MB limit)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      toast({
+        title: "Error",
+        description: "File size too large. Please select a file under 50MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const reader = new FileReader();
       
-      if (!isVideo && !isImage) {
+      reader.onload = (event) => {
+        try {
+          const result = event.target?.result as string;
+          if (result) {
+            setNewItem(prev => ({ 
+              ...prev, 
+              src: result, 
+              type: isVideo ? 'video' : 'image' 
+            }));
+            console.log('File uploaded successfully');
+          }
+        } catch (error) {
+          console.error('Error processing file result:', error);
+          toast({
+            title: "Error",
+            description: "Failed to process the uploaded file",
+            variant: "destructive",
+          });
+        } finally {
+          setIsUploading(false);
+        }
+      };
+
+      reader.onerror = (error) => {
+        console.error('FileReader error:', error);
         toast({
           title: "Error",
-          description: "Please select an image or video file",
+          description: "Failed to read the file",
           variant: "destructive",
         });
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setNewItem(prev => ({ 
-          ...prev, 
-          src: result, 
-          type: isVideo ? 'video' : 'image' 
-        }));
+        setIsUploading(false);
       };
+
       reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error starting file upload:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start file upload",
+        variant: "destructive",
+      });
+      setIsUploading(false);
     }
   };
 
@@ -136,7 +206,11 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                   accept="image/*,video/*"
                   onChange={handleFileUpload}
                   className="cursor-pointer"
+                  disabled={isUploading}
                 />
+                {isUploading && (
+                  <p className="text-sm text-muted-foreground mt-1">Uploading...</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="mediaUrl">Or Enter Media URL</Label>
@@ -146,6 +220,7 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                   placeholder="https://example.com/media.jpg"
                   value={newItem.src}
                   onChange={(e) => setNewItem(prev => ({ ...prev, src: e.target.value }))}
+                  disabled={isUploading}
                 />
               </div>
               <div>
@@ -153,6 +228,7 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                 <Select 
                   value={newItem.type} 
                   onValueChange={(value: 'image' | 'video') => setNewItem(prev => ({ ...prev, type: value }))}
+                  disabled={isUploading}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select media type" />
@@ -171,6 +247,7 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                 <Select 
                   value={newItem.category} 
                   onValueChange={(value) => setNewItem(prev => ({ ...prev, category: value }))}
+                  disabled={isUploading}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
@@ -193,6 +270,7 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                   value={newItem.alt}
                   onChange={(e) => setNewItem(prev => ({ ...prev, alt: e.target.value }))}
                   required
+                  disabled={isUploading}
                 />
               </div>
             </div>
@@ -205,20 +283,36 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                     src={newItem.src} 
                     className="w-32 h-32 object-cover rounded-lg border"
                     controls
+                    onError={(e) => {
+                      console.error('Video preview error:', e);
+                      toast({
+                        title: "Preview Error",
+                        description: "Unable to preview video",
+                        variant: "destructive",
+                      });
+                    }}
                   />
                 ) : (
                   <img 
                     src={newItem.src} 
                     alt="Preview" 
                     className="w-32 h-32 object-cover rounded-lg border"
+                    onError={(e) => {
+                      console.error('Image preview error:', e);
+                      toast({
+                        title: "Preview Error",
+                        description: "Unable to preview image",
+                        variant: "destructive",
+                      });
+                    }}
                   />
                 )}
               </div>
             )}
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isUploading}>
               <Upload className="mr-2 h-4 w-4" />
-              Add {newItem.type === 'video' ? 'Video' : 'Image'}
+              {isUploading ? 'Processing...' : `Add ${newItem.type === 'video' ? 'Video' : 'Image'}`}
             </Button>
           </form>
         </CardContent>
@@ -248,12 +342,18 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                       src={item.src}
                       className="w-full h-48 object-cover rounded-lg"
                       controls
+                      onError={(e) => {
+                        console.error('Video display error:', e);
+                      }}
                     />
                   ) : (
                     <img
                       src={item.src}
                       alt={item.alt}
                       className="w-full h-48 object-cover rounded-lg"
+                      onError={(e) => {
+                        console.error('Image display error:', e);
+                      }}
                     />
                   )}
                   <div className="absolute top-2 left-2">
