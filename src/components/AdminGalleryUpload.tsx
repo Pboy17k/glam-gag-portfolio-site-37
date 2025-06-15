@@ -46,10 +46,11 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newItem.src || !newItem.alt) {
+    // Check if we have either a URL or uploaded file, and description
+    if (!newItem.src || !newItem.alt.trim()) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please provide both a media file/URL and description",
         variant: "destructive",
       });
       return;
@@ -60,12 +61,17 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
         id: Date.now(),
         src: newItem.src,
         category: newItem.category,
-        alt: newItem.alt,
+        alt: newItem.alt.trim(),
         type: newItem.type
       };
 
       const updatedItems = [...images, newItemData];
       onImagesUpdate(updatedItems);
+      
+      // Clean up object URL if it was created from file upload
+      if (newItem.src.startsWith('blob:')) {
+        // Don't revoke immediately, let it persist in the gallery
+      }
       
       setNewItem({ src: '', category: 'bridal', alt: '', type: 'image' });
       
@@ -208,6 +214,9 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
                   onChange={(e) => setNewItem(prev => ({ ...prev, src: e.target.value }))}
                   disabled={isUploading}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {newItem.src.startsWith('blob:') ? 'File uploaded successfully' : 'Enter URL or upload file above'}
+                </p>
               </div>
               <div>
                 <Label htmlFor="mediaType">Media Type</Label>
