@@ -18,13 +18,13 @@ const CTASection = () => {
           Book your makeup session today and let us bring out your natural beauty 💖
         </p>
         <div className="flex flex-col sm:flex-row gap-6 justify-center">
-          <Button asChild size="lg" variant="secondary" className="text-foreground bg-white hover:bg-gray-100 rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
+          <Button asChild size="lg" variant="secondary" className="text-foreground bg-white hover:bg-gray-100 rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform dark:text-black">
             <Link to="/booking">
               <Heart className="mr-2 h-5 w-5 animate-pulse-heart" />
               Book Your Session
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 get-in-touch-visible rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform">
+          <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 get-in-touch-visible rounded-full px-12 py-4 text-lg font-medium hover:scale-105 transition-transform text-black dark:text-white">
             <Link to="/contact">Get in Touch</Link>
           </Button>
         </div>
