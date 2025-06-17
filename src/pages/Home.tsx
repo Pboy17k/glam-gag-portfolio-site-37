@@ -4,7 +4,6 @@ import HeroSection from '@/components/home/HeroSection';
 
 // Lazy load heavy components
 const GalleryShowcase = lazy(() => import('@/components/home/GalleryShowcase'));
-const AboutSection = lazy(() => import('@/components/home/AboutSection'));
 const ServicesPreview = lazy(() => import('@/components/home/ServicesPreview'));
 const TestimonialsSection = lazy(() => import('@/components/home/TestimonialsSection'));
 const CTASection = lazy(() => import('@/components/home/CTASection'));
@@ -23,10 +22,6 @@ const Home = () => {
       
       <Suspense fallback={<SectionLoader />}>
         <GalleryShowcase />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
-        <AboutSection />
       </Suspense>
       
       <Suspense fallback={<SectionLoader />}>
