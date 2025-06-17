@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GalleryItem {
   id: number;
@@ -13,43 +14,54 @@ interface GalleryItem {
 const GalleryShowcase = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load gallery images from admin system
+  // Load gallery images from Supabase first, then fallback to defaults
   useEffect(() => {
-    const savedItems = localStorage.getItem('galleryItems');
-    if (savedItems) {
+    const loadGalleryImages = async () => {
       try {
-        const parsedItems: GalleryItem[] = JSON.parse(savedItems);
-        // Filter for images only and extract their src URLs
-        const imageUrls = parsedItems
-          .filter(item => item.type === 'image')
-          .map(item => item.src);
-        
-        if (imageUrls.length > 0) {
+        // Load from Supabase first
+        const { data: galleryItems } = await supabase
+          .from('gallery_items')
+          .select('*')
+          .eq('type', 'image')
+          .limit(10);
+
+        if (galleryItems && galleryItems.length > 0) {
+          const imageUrls = galleryItems.map(item => item.src);
           setGalleryImages(imageUrls);
         } else {
-          // Fallback to placeholder images if no admin images available
-          setGalleryImages([
-            'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
-            'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
-            'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-            'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
-            'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
-          ]);
+          // Fallback to localStorage
+          const savedItems = localStorage.getItem('galleryItems');
+          if (savedItems) {
+            try {
+              const parsedItems: GalleryItem[] = JSON.parse(savedItems);
+              const imageUrls = parsedItems
+                .filter(item => item.type === 'image')
+                .map(item => item.src);
+              
+              if (imageUrls.length > 0) {
+                setGalleryImages(imageUrls);
+              } else {
+                setDefaultImages();
+              }
+            } catch (error) {
+              console.error('Error parsing localStorage gallery items:', error);
+              setDefaultImages();
+            }
+          } else {
+            setDefaultImages();
+          }
         }
       } catch (error) {
-        console.error('Error loading gallery items:', error);
-        // Fallback to placeholder images on error
-        setGalleryImages([
-          'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
-          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
-          'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-          'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
-          'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
-        ]);
+        console.error('Error loading gallery images:', error);
+        setDefaultImages();
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      // Set default placeholder images if no localStorage data
+    };
+
+    const setDefaultImages = () => {
       setGalleryImages([
         'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
         'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
@@ -57,14 +69,18 @@ const GalleryShowcase = () => {
         'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
         'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
       ]);
-    }
+    };
+
+    loadGalleryImages();
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
-    }, 4000);
-    return () => clearInterval(timer);
+    if (galleryImages.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
+      }, 4000);
+      return () => clearInterval(timer);
+    }
   }, [galleryImages.length]);
 
   const nextSlide = () => {
@@ -74,6 +90,22 @@ const GalleryShowcase = () => {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
+
+  if (isLoading) {
+    return (
+      <section className="py-24 powder-bg bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Recent Transformations</h2>
+            <p className="text-xl text-muted-foreground font-light">Showcasing our latest beauty creations ✨</p>
+          </div>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 powder-bg bg-background">
@@ -92,7 +124,10 @@ const GalleryShowcase = () => {
                 className="w-full h-full object-cover transition-all duration-700 ease-in-out"
                 onError={(e) => {
                   console.error('Image load error for:', galleryImages[currentSlide]);
-                  // Remove broken image from array if needed
+                  // Try next image on error
+                  if (galleryImages.length > 1) {
+                    setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
+                  }
                 }}
               />
             )}

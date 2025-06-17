@@ -6,20 +6,45 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const ADMIN_ACCOUNTS_KEY = "admin_accounts";
 const ADMIN_SESSION_KEY = "admin_session";
 
-// Helper: get admins from localStorage or create default
-function getAdminAccounts() {
+// Helper: get admins from Supabase or localStorage
+async function getAdminAccounts() {
+  try {
+    // First try Supabase
+    const { data: supabaseAdmins } = await supabase
+      .from('admin_accounts')
+      .select('*');
+
+    if (supabaseAdmins && supabaseAdmins.length > 0) {
+      return supabaseAdmins;
+    }
+  } catch (error) {
+    console.error('Error loading from Supabase:', error);
+  }
+
+  // Fallback to localStorage
   let list = [];
   try {
     const ls = localStorage.getItem(ADMIN_ACCOUNTS_KEY);
     if (ls) list = JSON.parse(ls) || [];
   } catch {}
+  
   if (Array.isArray(list) && list.length > 0) return list;
+  
   // Ensure ONE default admin if empty
   const defaultAdmin = { username: "admin", password: "glamadmin2024" };
+  
+  // Try to save to Supabase
+  try {
+    await supabase.from('admin_accounts').insert([defaultAdmin]);
+  } catch (error) {
+    console.error('Error saving default admin to Supabase:', error);
+  }
+  
   localStorage.setItem(ADMIN_ACCOUNTS_KEY, JSON.stringify([defaultAdmin]));
   return [defaultAdmin];
 }
@@ -27,6 +52,7 @@ function getAdminAccounts() {
 interface AdminLoginProps {
   onLogin: () => void;
 }
+
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -36,25 +62,35 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     e.preventDefault();
     setLoading(true);
 
-    const admins = getAdminAccounts();
-    const match = admins.find(
-      (acc) => acc.username === credentials.username && acc.password === credentials.password
-    );
+    try {
+      const admins = await getAdminAccounts();
+      const match = admins.find(
+        (acc) => acc.username === credentials.username && acc.password === credentials.password
+      );
 
-    if (match) {
-      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ username: match.username }));
-      onLogin();
+      if (match) {
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ username: match.username }));
+        onLogin();
+        toast({
+          title: "Login Successful",
+          description: `Welcome, ${match.username}!`,
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid username or password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
-        title: "Login Successful",
-        description: `Welcome, ${match.username}!`,
-      });
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid username or password",
+        title: "Login Error",
+        description: "An error occurred during login. Please try again.",
         variant: "destructive",
       });
     }
+    
     setLoading(false);
   };
 

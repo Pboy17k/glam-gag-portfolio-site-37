@@ -1,9 +1,44 @@
 
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 const AboutSection = () => {
+  const [profileImage, setProfileImage] = useState("/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png");
+
+  useEffect(() => {
+    const loadProfileImage = async () => {
+      try {
+        // First try to get from Supabase
+        const { data } = await supabase
+          .from('custom_images')
+          .select('value')
+          .eq('key', 'aboutProfile')
+          .single();
+
+        if (data?.value) {
+          setProfileImage(data.value);
+        } else {
+          // Fallback to localStorage
+          try {
+            const customImages = JSON.parse(localStorage.getItem("customImages") ?? "{}");
+            if (customImages.aboutProfile) {
+              setProfileImage(customImages.aboutProfile);
+            }
+          } catch (error) {
+            console.error('Error loading from localStorage:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile image:', error);
+      }
+    };
+
+    loadProfileImage();
+  }, []);
+
   return (
     <section className="py-24 bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,9 +67,13 @@ const AboutSection = () => {
           <div className="relative reveal-on-scroll">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl opacity-20 animate-gentle-bounce"></div>
             <img
-              src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80"
+              src={profileImage}
               alt="Makeup artist at work"
               className="relative rounded-3xl shadow-2xl animate-float hover:scale-105 transition-transform duration-500"
+              onError={(e) => {
+                console.error('Profile image failed to load, using fallback');
+                e.currentTarget.src = "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
+              }}
             />
           </div>
         </div>
