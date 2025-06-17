@@ -16,59 +16,57 @@ const GalleryShowcase = () => {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load gallery images from Supabase first, then fallback to defaults
+  // Default fallback images
+  const defaultImages = [
+    'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+    'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
+    'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
+  ];
+
   useEffect(() => {
     const loadGalleryImages = async () => {
       try {
-        // Load from Supabase first
-        const { data: galleryItems } = await supabase
+        // Try to load from Supabase with timeout
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 3000)
+        );
+        
+        const supabasePromise = supabase
           .from('gallery_items')
-          .select('*')
+          .select('src')
           .eq('type', 'image')
-          .limit(10);
+          .limit(6);
+
+        const { data: galleryItems } = await Promise.race([supabasePromise, timeoutPromise]) as any;
 
         if (galleryItems && galleryItems.length > 0) {
-          const imageUrls = galleryItems.map(item => item.src);
-          setGalleryImages(imageUrls);
-        } else {
-          // Fallback to localStorage
-          const savedItems = localStorage.getItem('galleryItems');
-          if (savedItems) {
-            try {
-              const parsedItems: GalleryItem[] = JSON.parse(savedItems);
-              const imageUrls = parsedItems
-                .filter(item => item.type === 'image')
-                .map(item => item.src);
-              
-              if (imageUrls.length > 0) {
-                setGalleryImages(imageUrls);
-              } else {
-                setDefaultImages();
+          const validImages = galleryItems
+            .map((item: any) => item.src)
+            .filter((src: string) => {
+              try {
+                new URL(src);
+                return true;
+              } catch {
+                return src.startsWith('blob:') || src.startsWith('data:');
               }
-            } catch (error) {
-              console.error('Error parsing localStorage gallery items:', error);
-              setDefaultImages();
-            }
+            });
+          
+          if (validImages.length > 0) {
+            setGalleryImages(validImages);
           } else {
-            setDefaultImages();
+            setGalleryImages(defaultImages);
           }
+        } else {
+          setGalleryImages(defaultImages);
         }
       } catch (error) {
-        console.error('Error loading gallery images:', error);
-        setDefaultImages();
+        console.warn('Using default images due to loading issue:', error);
+        setGalleryImages(defaultImages);
       } finally {
         setIsLoading(false);
       }
-    };
-
-    const setDefaultImages = () => {
-      setGalleryImages([
-        'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
-        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
-        'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-        'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&q=80',
-        'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800&q=80'
-      ]);
     };
 
     loadGalleryImages();
@@ -91,9 +89,16 @@ const GalleryShowcase = () => {
     setCurrentSlide((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
+  const handleImageError = () => {
+    console.warn('Image load error, switching to next slide');
+    if (galleryImages.length > 1) {
+      nextSlide();
+    }
+  };
+
   if (isLoading) {
     return (
-      <section className="py-24 powder-bg bg-background">
+      <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Recent Transformations</h2>
@@ -108,58 +113,59 @@ const GalleryShowcase = () => {
   }
 
   return (
-    <section className="py-24 powder-bg bg-background">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 reveal-on-scroll">
+        <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Recent Transformations</h2>
           <p className="text-xl text-muted-foreground font-light">Showcasing our latest beauty creations ✨</p>
         </div>
 
-        <div className="relative max-w-5xl mx-auto reveal-on-scroll">
+        <div className="relative max-w-5xl mx-auto">
           <div className="relative h-96 md:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
             {galleryImages.length > 0 && (
               <img
                 src={galleryImages[currentSlide]}
                 alt="Makeup transformation"
                 className="w-full h-full object-cover transition-all duration-700 ease-in-out"
-                onError={(e) => {
-                  console.error('Image load error for:', galleryImages[currentSlide]);
-                  // Try next image on error
-                  if (galleryImages.length > 1) {
-                    setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
-                  }
-                }}
+                loading="lazy"
+                onError={handleImageError}
               />
             )}
             
-            <button
-              onClick={prevSlide}
-              className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-md text-primary p-3 rounded-full hover:bg-white/30 transition-all duration-300 hover:scale-110"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            
-            <button
-              onClick={nextSlide}
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-md text-primary p-3 rounded-full hover:bg-white/30 transition-all duration-300 hover:scale-110"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-md text-primary p-3 rounded-full hover:bg-white/30 transition-all duration-300 hover:scale-110"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-md text-primary p-3 rounded-full hover:bg-white/30 transition-all duration-300 hover:scale-110"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
           </div>
 
-          <div className="flex justify-center mt-8 space-x-3">
-            {galleryImages.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-4 h-4 rounded-full transition-all duration-300 ${
-                  index === currentSlide 
-                    ? 'bg-primary scale-125 shadow-lg' 
-                    : 'bg-primary/30 hover:bg-primary/50'
-                }`}
-              />
-            ))}
-          </div>
+          {galleryImages.length > 1 && (
+            <div className="flex justify-center mt-8 space-x-3">
+              {galleryImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                    index === currentSlide 
+                      ? 'bg-primary scale-125 shadow-lg' 
+                      : 'bg-primary/30 hover:bg-primary/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

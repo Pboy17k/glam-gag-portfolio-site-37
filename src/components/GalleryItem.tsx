@@ -16,9 +16,25 @@ interface GalleryItemProps {
 }
 
 const GalleryItemComponent = ({ item, onDelete }: GalleryItemProps) => {
-  const handleMediaError = (mediaType: string) => {
-    console.error(`${mediaType} display error`);
+  const handleMediaError = (event: any, mediaType: string) => {
+    console.error(`${mediaType} load error for:`, item.src);
+    // Hide broken media instead of showing broken image icon
+    event.target.style.display = 'none';
   };
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return url.startsWith('blob:') || url.startsWith('data:');
+    }
+  };
+
+  if (!isValidUrl(item.src)) {
+    console.warn('Invalid URL for gallery item:', item.src);
+    return null;
+  }
 
   return (
     <div className="relative group">
@@ -27,14 +43,16 @@ const GalleryItemComponent = ({ item, onDelete }: GalleryItemProps) => {
           src={item.src}
           className="w-full h-48 object-cover rounded-lg"
           controls
-          onError={() => handleMediaError('Video')}
+          preload="metadata"
+          onError={(e) => handleMediaError(e, 'Video')}
         />
       ) : (
         <img
           src={item.src}
           alt={item.alt}
           className="w-full h-48 object-cover rounded-lg"
-          onError={() => handleMediaError('Image')}
+          loading="lazy"
+          onError={(e) => handleMediaError(e, 'Image')}
         />
       )}
       <div className="absolute top-2 left-2">

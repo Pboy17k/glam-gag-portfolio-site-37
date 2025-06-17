@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { X, Filter, Video, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GalleryItem {
   id: number;
@@ -16,67 +17,77 @@ const Gallery = () => {
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load gallery items from localStorage
-  useEffect(() => {
-    const savedItems = localStorage.getItem('galleryItems');
-    if (savedItems) {
-      try {
-        const parsedItems = JSON.parse(savedItems);
-        setGalleryItems(parsedItems);
-      } catch (error) {
-        console.error('Error loading gallery items:', error);
-        // Fallback to default placeholder images if localStorage is empty or corrupted
-        setGalleryItems([
-          {
-            id: 1,
-            src: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
-            category: 'bridal',
-            alt: 'Bridal makeup transformation',
-            type: 'image'
-          },
-          {
-            id: 2,
-            src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
-            category: 'casual',
-            alt: 'Casual glam makeup',
-            type: 'image'
-          },
-          {
-            id: 3,
-            src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-            category: 'natural',
-            alt: 'Natural makeup look',
-            type: 'image'
-          }
-        ]);
-      }
-    } else {
-      // Set default placeholder content if no localStorage data
-      setGalleryItems([
-        {
-          id: 1,
-          src: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
-          category: 'bridal',
-          alt: 'Bridal makeup transformation',
-          type: 'image'
-        },
-        {
-          id: 2,
-          src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
-          category: 'casual',
-          alt: 'Casual glam makeup',
-          type: 'image'
-        },
-        {
-          id: 3,
-          src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-          category: 'natural',
-          alt: 'Natural makeup look',
-          type: 'image'
-        }
-      ]);
+  const defaultItems: GalleryItem[] = [
+    {
+      id: 1,
+      src: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&q=80',
+      category: 'bridal',
+      alt: 'Bridal makeup transformation',
+      type: 'image'
+    },
+    {
+      id: 2,
+      src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+      category: 'casual',
+      alt: 'Casual glam makeup',
+      type: 'image'
+    },
+    {
+      id: 3,
+      src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+      category: 'natural',
+      alt: 'Natural makeup look',
+      type: 'image'
     }
+  ];
+
+  useEffect(() => {
+    const loadGalleryItems = async () => {
+      try {
+        // Try Supabase first with timeout
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 3000)
+        );
+        
+        const supabasePromise = supabase
+          .from('gallery_items')
+          .select('*')
+          .order('id', { ascending: true });
+
+        const { data: galleryData } = await Promise.race([supabasePromise, timeoutPromise]) as any;
+
+        if (galleryData && galleryData.length > 0) {
+          const validItems = galleryData.filter((item: any) => {
+            try {
+              new URL(item.src);
+              return true;
+            } catch {
+              return item.src.startsWith('blob:') || item.src.startsWith('data:');
+            }
+          }).map((item: any) => ({
+            ...item,
+            type: item.type === 'image' ? 'image' : 'video',
+          }));
+
+          if (validItems.length > 0) {
+            setGalleryItems(validItems);
+          } else {
+            setGalleryItems(defaultItems);
+          }
+        } else {
+          setGalleryItems(defaultItems);
+        }
+      } catch (error) {
+        console.warn('Using default gallery items due to loading issue:', error);
+        setGalleryItems(defaultItems);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadGalleryItems();
   }, []);
 
   const filters = [
@@ -94,6 +105,31 @@ const Gallery = () => {
 
   const imageItems = filteredItems.filter(item => item.type === 'image');
   const videoItems = filteredItems.filter(item => item.type === 'video');
+
+  const handleImageError = (event: any, itemId: number) => {
+    console.warn('Image load error for item:', itemId);
+    event.target.style.display = 'none';
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+              Our <span className="gradient-text">Portfolio</span>
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Explore our collection of makeup transformations and training content
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-20 bg-background">
@@ -147,12 +183,15 @@ const Gallery = () => {
                   className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
                   muted
                   preload="metadata"
+                  onError={(e) => handleImageError(e, item.id)}
                 />
               ) : (
                 <img
                   src={item.src}
                   alt={item.alt}
                   className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+                  loading="lazy"
+                  onError={(e) => handleImageError(e, item.id)}
                 />
               )}
               
@@ -197,6 +236,7 @@ const Gallery = () => {
                     src={selectedItem.src}
                     alt={selectedItem.alt}
                     className="w-full h-auto max-h-[85vh] object-contain"
+                    loading="lazy"
                   />
                 )}
                 <Button
