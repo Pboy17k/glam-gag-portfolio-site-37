@@ -20,24 +20,6 @@ interface AdminGalleryUploadProps {
 const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps) => {
   const { toast } = useToast();
 
-  // Load items from localStorage on component mount
-  useEffect(() => {
-    const savedItems = localStorage.getItem('galleryItems');
-    if (savedItems) {
-      try {
-        const parsedItems = JSON.parse(savedItems);
-        onImagesUpdate(parsedItems);
-      } catch (error) {
-        console.error('Error loading items from localStorage:', error);
-      }
-    }
-  }, [onImagesUpdate]);
-
-  // Save items to localStorage whenever items change
-  useEffect(() => {
-    localStorage.setItem('galleryItems', JSON.stringify(images));
-  }, [images]);
-
   const handleAddItem = (itemData: Omit<GalleryItem, 'id'>) => {
     const newItemData: GalleryItem = {
       id: Date.now(),
@@ -46,6 +28,11 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
 
     const updatedItems = [...images, newItemData];
     onImagesUpdate(updatedItems);
+    
+    toast({
+      title: "Added",
+      description: `${itemData.type === 'video' ? 'Video' : 'Image'} added to gallery successfully!`,
+    });
   };
 
   const handleDeleteItem = (itemId: number) => {

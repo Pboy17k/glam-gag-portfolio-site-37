@@ -46,16 +46,9 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
         type: newItem.type
       });
       
-      if (newItem.src.startsWith('blob:')) {
-        // Don't revoke immediately, let it persist in the gallery
-      }
-      
+      // Reset form after successful submission
       setNewItem({ src: '', category: 'bridal', alt: '', type: 'image' });
       
-      toast({
-        title: "Success",
-        description: `${newItem.type === 'video' ? 'Video' : 'Image'} added to gallery successfully!`,
-      });
     } catch (error) {
       console.error('Error adding item:', error);
       toast({

@@ -27,6 +27,42 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_login: string | null
+          name: string
+          password_hash: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          name: string
+          password_hash: string
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          name?: string
+          password_hash?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           created_at: string | null
@@ -63,6 +99,39 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery_images: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+          upload_date: string
+          url: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          upload_date?: string
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          upload_date?: string
+          url?: string
+        }
+        Relationships: []
+      }
       gallery_items: {
         Row: {
           alt: string
@@ -89,6 +158,116 @@ export type Database = {
           type?: string
         }
         Relationships: []
+      }
+      hero_images: {
+        Row: {
+          active: boolean
+          created_at: string
+          display_order: number
+          id: string
+          subtitle: string
+          title: string
+          updated_at: string
+          upload_date: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          id?: string
+          subtitle: string
+          title: string
+          updated_at?: string
+          upload_date?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          id?: string
+          subtitle?: string
+          title?: string
+          updated_at?: string
+          upload_date?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      login_attempts: {
+        Row: {
+          attempt_count: number
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          last_attempt: string
+          user_agent: string | null
+        }
+        Insert: {
+          attempt_count?: number
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          last_attempt?: string
+          user_agent?: string | null
+        }
+        Update: {
+          attempt_count?: number
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          last_attempt?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string
+          date: string
+          id: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string
+          date: string
+          id?: string
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          date?: string
+          id?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
