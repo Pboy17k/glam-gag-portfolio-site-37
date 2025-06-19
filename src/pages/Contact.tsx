@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import MapComponent from '@/components/MapComponent';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -189,7 +190,7 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* Map Section (Placeholder) */}
+        {/* Map Section */}
         <section className="mt-20">
           <Card>
             <CardHeader>
@@ -199,15 +200,13 @@ const Contact = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <p className="text-lg font-medium">Studio Location</p>
-                  <p className="text-muted-foreground">Opposite SMC Central Mosque Unguwan Dosa, Kaduna</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Call or WhatsApp for detailed directions
-                  </p>
-                </div>
+              <MapComponent />
+              <div className="mt-4 text-center">
+                <p className="text-lg font-medium">Studio Location</p>
+                <p className="text-muted-foreground">Opposite SMC Central Mosque Unguwan Dosa, Kaduna</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Call or WhatsApp for detailed directions
+                </p>
               </div>
             </CardContent>
           </Card>

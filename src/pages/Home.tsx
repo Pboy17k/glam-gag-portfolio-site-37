@@ -1,13 +1,11 @@
 
 import { Suspense, lazy } from 'react';
 import HeroSection from '@/components/home/HeroSection';
+import ContactSection from '@/components/home/ContactSection';
+import FAQSection from '@/components/FAQSection';
 
-// Lazy load heavy components
+// Lazy load the gallery component
 const GalleryShowcase = lazy(() => import('@/components/home/GalleryShowcase'));
-const AboutSection = lazy(() => import('@/components/home/AboutSection'));
-const ServicesPreview = lazy(() => import('@/components/home/ServicesPreview'));
-const TestimonialsSection = lazy(() => import('@/components/home/TestimonialsSection'));
-const CTASection = lazy(() => import('@/components/home/CTASection'));
 
 // Enhanced loading component with skeleton
 const SectionLoader = () => (
@@ -35,21 +33,9 @@ const Home = () => {
         <GalleryShowcase />
       </Suspense>
       
-      <Suspense fallback={<SectionLoader />}>
-        <AboutSection />
-      </Suspense>
+      <ContactSection />
       
-      <Suspense fallback={<SectionLoader />}>
-        <ServicesPreview />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
-        <TestimonialsSection />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
-        <CTASection />
-      </Suspense>
+      <FAQSection />
     </div>
   );
 };
