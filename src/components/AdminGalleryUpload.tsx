@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { deleteFileFromStorage, isStorageUrl } from '@/utils/storageUtils';
 import MediaUploadForm from './MediaUploadForm';
 import GalleryGrid from './GalleryGrid';
 
@@ -35,14 +36,22 @@ const AdminGalleryUpload = ({ images, onImagesUpdate }: AdminGalleryUploadProps)
     });
   };
 
-  const handleDeleteItem = (itemId: number) => {
+  const handleDeleteItem = async (itemId: number) => {
     try {
+      const itemToDelete = images.find(item => item.id === itemId);
+      
+      // Delete from storage if it's a storage URL
+      if (itemToDelete && isStorageUrl(itemToDelete.src)) {
+        console.log('Deleting file from storage:', itemToDelete.src);
+        await deleteFileFromStorage(itemToDelete.src);
+      }
+      
       const updatedItems = images.filter(item => item.id !== itemId);
       onImagesUpdate(updatedItems);
       
       toast({
         title: "Deleted",
-        description: "Item removed from gallery",
+        description: "Item removed from gallery and storage",
       });
     } catch (error) {
       console.error('Error deleting item:', error);

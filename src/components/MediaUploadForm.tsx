@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { uploadFileToStorage } from '@/utils/storageUtils';
 import MediaPreview from './MediaPreview';
 
 interface GalleryItem {
@@ -24,6 +25,7 @@ interface MediaUploadFormProps {
 const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
   const [newItem, setNewItem] = useState({ src: '', category: 'bridal', alt: '', type: 'image' as 'image' | 'video' });
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const { toast } = useToast();
 
   const handleAddItem = (e: React.FormEvent) => {
@@ -48,6 +50,7 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
       
       // Reset form after successful submission
       setNewItem({ src: '', category: 'bridal', alt: '', type: 'image' });
+      setUploadProgress(0);
       
     } catch (error) {
       console.error('Error adding item:', error);
@@ -59,7 +62,7 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -91,31 +94,36 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
     }
 
     setIsUploading(true);
+    setUploadProgress(10);
 
     try {
-      const objectUrl = URL.createObjectURL(file);
+      // Upload to Supabase Storage
+      setUploadProgress(50);
+      const storageUrl = await uploadFileToStorage(file, 'gallery');
+      setUploadProgress(90);
       
       setNewItem(prev => ({ 
         ...prev, 
-        src: objectUrl, 
+        src: storageUrl, 
         type: isVideo ? 'video' : 'image' 
       }));
       
-      console.log('File processed successfully with object URL');
+      setUploadProgress(100);
+      console.log('File uploaded successfully with storage URL:', storageUrl);
       
       toast({
-        title: "File Ready",
-        description: `${isVideo ? 'Video' : 'Image'} is ready to be added to gallery`,
+        title: "Upload Successful",
+        description: `${isVideo ? 'Video' : 'Image'} uploaded and ready to add to gallery`,
       });
       
-      setIsUploading(false);
     } catch (error) {
-      console.error('Error processing file:', error);
+      console.error('Error uploading file:', error);
       toast({
-        title: "Error",
-        description: "Failed to process the uploaded file",
+        title: "Upload Failed",
+        description: "Failed to upload file. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsUploading(false);
     }
   };
@@ -142,7 +150,15 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
                 disabled={isUploading}
               />
               {isUploading && (
-                <p className="text-sm text-muted-foreground mt-1">Processing...</p>
+                <div className="mt-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-primary h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">Uploading... {uploadProgress}%</p>
+                </div>
               )}
               <p className="text-xs text-muted-foreground mt-1">
                 Max size: Images 5MB, Videos 10MB
@@ -154,12 +170,12 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
                 id="mediaUrl"
                 type="url"
                 placeholder="https://example.com/media.jpg"
-                value={newItem.src.startsWith('blob:') ? '' : newItem.src}
+                value={newItem.src.includes('supabase.co') ? '' : newItem.src}
                 onChange={(e) => setNewItem(prev => ({ ...prev, src: e.target.value }))}
                 disabled={isUploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {newItem.src.startsWith('blob:') ? 'File uploaded successfully' : 'Enter URL or upload file above'}
+                {newItem.src.includes('supabase.co') ? 'File uploaded to storage' : 'Enter URL or upload file above'}
               </p>
             </div>
             <div>
@@ -220,7 +236,7 @@ const MediaUploadForm = ({ onAddItem }: MediaUploadFormProps) => {
 
           <Button type="submit" className="w-full" disabled={isUploading}>
             <Upload className="mr-2 h-4 w-4" />
-            {isUploading ? 'Processing...' : `Add ${newItem.type === 'video' ? 'Video' : 'Image'}`}
+            {isUploading ? `Uploading... ${uploadProgress}%` : `Add ${newItem.type === 'video' ? 'Video' : 'Image'}`}
           </Button>
         </form>
       </CardContent>

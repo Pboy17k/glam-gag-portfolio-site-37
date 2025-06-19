@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -7,24 +6,35 @@ import { supabase } from '@/integrations/supabase/client';
 
 const AboutSection = () => {
   const [profileImage, setProfileImage] = useState("/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png");
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const loadProfileImage = async () => {
       try {
-        // First try to get from Supabase
-        const { data } = await supabase
+        console.log('Loading profile image...');
+        
+        // Extended timeout for better reliability
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 6000)
+        );
+        
+        const supabasePromise = supabase
           .from('custom_images')
           .select('value')
           .eq('key', 'aboutProfile')
-          .single();
+          .maybeSingle();
+
+        const { data } = await Promise.race([supabasePromise, timeoutPromise]) as any;
 
         if (data?.value) {
+          console.log('Profile image loaded from Supabase');
           setProfileImage(data.value);
         } else {
-          // Fallback to localStorage
+          // Enhanced fallback to localStorage
           try {
             const customImages = JSON.parse(localStorage.getItem("customImages") ?? "{}");
             if (customImages.aboutProfile) {
+              console.log('Profile image loaded from localStorage');
               setProfileImage(customImages.aboutProfile);
             }
           } catch (error) {
@@ -32,12 +42,20 @@ const AboutSection = () => {
           }
         }
       } catch (error) {
-        console.error('Error loading profile image:', error);
+        console.warn('Profile image loading failed, using default:', error);
+        // Keep default image
+      } finally {
+        setImageLoaded(true);
       }
     };
 
     loadProfileImage();
   }, []);
+
+  const handleImageError = (e: any) => {
+    console.warn('Profile image failed to load, using fallback');
+    e.currentTarget.src = "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
+  };
 
   return (
     <section className="py-24 bg-card">
@@ -66,15 +84,18 @@ const AboutSection = () => {
 
           <div className="relative reveal-on-scroll">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl opacity-20 animate-gentle-bounce"></div>
-            <img
-              src={profileImage}
-              alt="Makeup artist at work"
-              className="relative rounded-3xl shadow-2xl animate-float hover:scale-105 transition-transform duration-500"
-              onError={(e) => {
-                console.error('Profile image failed to load, using fallback');
-                e.currentTarget.src = "/lovable-uploads/0debc043-5d1d-4ec7-a3c6-3c492c6b0cd6.png";
-              }}
-            />
+            {!imageLoaded ? (
+              <div className="relative rounded-3xl shadow-2xl bg-gray-200 animate-pulse h-96 w-full"></div>
+            ) : (
+              <img
+                src={profileImage}
+                alt="Makeup artist at work"
+                className="relative rounded-3xl shadow-2xl animate-float hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+                onError={handleImageError}
+                onLoad={() => console.log('Profile image loaded successfully')}
+              />
+            )}
           </div>
         </div>
       </div>
