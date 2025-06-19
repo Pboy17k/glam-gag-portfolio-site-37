@@ -30,7 +30,10 @@ const ContactSection = () => {
               </div>
               <h3 className="font-semibold mb-2">WhatsApp</h3>
               <p className="text-muted-foreground mb-4">09055551251</p>
-              <Button onClick={handleWhatsAppClick} className="luxury-button w-full">
+              <Button 
+                onClick={handleWhatsAppClick} 
+                className="luxury-button w-full hover:bg-blue-600 dark:hover:bg-blue-600"
+              >
                 Chat Now
               </Button>
             </CardContent>
@@ -43,7 +46,10 @@ const ContactSection = () => {
               </div>
               <h3 className="font-semibold mb-2">Call Us</h3>
               <p className="text-muted-foreground mb-4">09055551251</p>
-              <Button asChild className="luxury-button w-full">
+              <Button 
+                asChild 
+                className="luxury-button w-full hover:bg-blue-600 dark:hover:bg-blue-600"
+              >
                 <a href="tel:+2349055551251">Call Now</a>
               </Button>
             </CardContent>
@@ -56,7 +62,10 @@ const ContactSection = () => {
               </div>
               <h3 className="font-semibold mb-2">Visit Us</h3>
               <p className="text-muted-foreground mb-4">Unguwan Dosa, Kaduna</p>
-              <Button asChild className="luxury-button w-full">
+              <Button 
+                asChild 
+                className="luxury-button w-full hover:bg-blue-600 dark:hover:bg-blue-600"
+              >
                 <a href="/contact">Get Directions</a>
               </Button>
             </CardContent>
